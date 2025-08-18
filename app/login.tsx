@@ -1,6 +1,13 @@
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Animated,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useAuth } from "../context/auth-context";
 
 export default function Login() {
@@ -61,8 +68,6 @@ export default function Login() {
     />
   );
 
-  const numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-
   const AnimatedKey = ({
     value,
     onPress,
@@ -93,7 +98,10 @@ export default function Login() {
     };
 
     return (
-      <Pressable onPress={handlePress}>
+      <Pressable
+        onPress={handlePress}
+        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+      >
         <Animated.View style={[styles.key, { transform: [{ scale }] }]}>
           <Text style={styles.keyText}>{value}</Text>
         </Animated.View>
@@ -101,8 +109,19 @@ export default function Login() {
     );
   };
 
+  const rows = [
+    ["1", "2", "3"],
+    ["4", "5", "6"],
+    ["7", "8", "9"],
+    ["", "0", "⌫"],
+  ];
+
   return (
     <View style={styles.container}>
+      <Image
+        source={require("../assets/images/logo-512.webp")}
+        style={styles.logo}
+      />
       <Text style={styles.title}>Bienvenido a MyMoney3</Text>
 
       <Animated.View
@@ -115,13 +134,28 @@ export default function Login() {
       </Animated.View>
 
       <View style={styles.numpad}>
-        {numbers.slice(0, 9).map((n) => (
-          <AnimatedKey key={n} value={n} onPress={() => handleKeyPress(n)} />
-        ))}
+        {rows.map((row, rowIndex) => (
+          <View key={rowIndex} style={styles.row}>
+            {row.map((n, i) => {
+              if (n === "⌫") {
+                return pin.length > 0 ? (
+                  <AnimatedKey key={i} value="⌫" onPress={handleDelete} />
+                ) : (
+                  <View key={i} style={styles.keyEmpty} /> // espacio igual al resto
+                );
+              }
+              if (n === "") return <View key={i} style={styles.keyEmpty} />;
 
-        <View style={styles.keyEmpty} />
-        <AnimatedKey value="0" onPress={() => handleKeyPress("0")} />
-        <AnimatedKey value="⌫" onPress={handleDelete} />
+              return (
+                <AnimatedKey
+                  key={i}
+                  value={n}
+                  onPress={() => handleKeyPress(n)}
+                />
+              );
+            })}
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -134,7 +168,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  title: { fontSize: 22, marginBottom: 40 },
+  logo: { width: 100, height: 100, marginBottom: 30 },
+  title: { fontSize: 16, marginBottom: 30 },
   pinDotsContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -144,26 +179,24 @@ const styles = StyleSheet.create({
   dot: {
     width: 15,
     height: 15,
-    borderRadius: 15 / 2,
+    borderRadius: 7.5,
     backgroundColor: "#ccc",
     marginHorizontal: 5,
   },
   dotFilled: { backgroundColor: "#333" },
-  numpad: {
+  numpad: { marginTop: 40 },
+  row: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    width: 220,
-    justifyContent: "center",
-    gap: 15,
+    justifyContent: "space-between",
+    width: 280,
+    marginBottom: 10,
   },
   key: {
     width: 60,
     height: 60,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30,
-    backgroundColor: "#eee",
   },
-  keyEmpty: { width: 60, height: 60, margin: 0 },
-  keyText: { fontSize: 22 },
+  keyEmpty: { width: 60, height: 60 },
+  keyText: { fontSize: 30 },
 });

@@ -42,7 +42,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
     loadSession();
   }, []);
 
-  // Iniciar sesión con PIN
   const signIn = async (pin: string) => {
     const { data, error } = await supabase
       .from("users")
@@ -51,7 +50,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       .single();
 
     if (error || !data) {
-      return false; // PIN incorrecto
+      return false;
     }
 
     const sessionData: SessionData = {
@@ -61,11 +60,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     setSession(sessionData);
     await AsyncStorage.setItem("session", JSON.stringify(sessionData));
+
     return true;
   };
 
-  // Cerrar sesión
   const signOut = async () => {
+    const user = await AsyncStorage.getItem("user");
+
     setSession(null);
     await AsyncStorage.removeItem("session");
   };
