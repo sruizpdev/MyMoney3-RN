@@ -1,10 +1,28 @@
 import { Stack } from "expo-router";
+import { AuthProvider, useAuth } from "../context/auth-context";
+import { SplashScreenController } from "../splah";
 
-export default function RootLayout() {
+export default function Root() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="login" />
-      <Stack.Screen name="(tabs)" />
+    <AuthProvider>
+      <SplashScreenController />
+      <RootNavigator />
+    </AuthProvider>
+  );
+}
+
+function RootNavigator() {
+  const { session } = useAuth();
+
+  return (
+    <Stack>
+      <Stack.Protected guard={!!session}>
+        <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!session}>
+        <Stack.Screen name="login" />
+      </Stack.Protected>
     </Stack>
   );
 }
