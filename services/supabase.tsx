@@ -33,6 +33,24 @@ export const addTransaction = async (transaction: Omit<Transaction, "id">) => {
   return data?.[0] || null;
 };
 
+export const updateTransaction = async (
+  id: string,
+  updated: Partial<Transaction>
+) => {
+  const { data, error } = await supabase
+    .from("transactions")
+    .update(updated)
+    .eq("id", id)
+    .select("*");
+
+  if (error) {
+    console.error("Error updating transaction:", error.message);
+    return null;
+  }
+
+  return data?.[0] || null;
+};
+
 // Borrar transacción por id
 export const deleteTransaction = async (id: string) => {
   const { error } = await supabase.from("transactions").delete().eq("id", id);

@@ -44,7 +44,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="income-form"
+        name="add-income"
         options={{
           title: "Ingreso",
           tabBarIcon: ({ color }) => (
