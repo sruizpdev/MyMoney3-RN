@@ -1,7 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { Transaction } from "../../interfaces";
 import {
   getMonthlyBalance,
@@ -37,8 +37,22 @@ export default function Home() {
     }, [])
   );
 
+  const handlePress = (item: Transaction) => {
+    if (item.type === "income") {
+      router.push(`/screens/income-details?id=${item.id}`);
+    } else {
+      router.push(`/screens/expense-details?id=${item.id}`);
+    }
+  };
+
   const renderItem = ({ item }: { item: Transaction }) => (
-    <View style={styles.transactionItem}>
+    <Pressable
+      onPress={() => handlePress(item)}
+      style={({ pressed }) => [
+        styles.transactionItem,
+        pressed && { opacity: 0.5 },
+      ]}
+    >
       <View>
         <Text style={styles.description}>{item.description}</Text>
         <Text style={styles.date}>
@@ -53,12 +67,11 @@ export default function Home() {
       >
         {item.amount} €
       </Text>
-    </View>
+    </Pressable>
   );
 
   return (
     <View style={styles.container}>
-      {/* SECCIÓN BALANCE */}
       {balanceData && (
         <View style={styles.balanceContainer}>
           <Text style={styles.month}>{balanceData.mes}</Text>
@@ -83,7 +96,6 @@ export default function Home() {
         </View>
       )}
 
-      {/* LISTA DE TRANSACCIONES */}
       <FlatList
         data={transactions}
         keyExtractor={(item) => String(item.id)}
