@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/auth-context";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { Pressable } from "react-native";
@@ -38,7 +39,7 @@ export default function TabLayout() {
         options={{
           title: "Inicio",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="home" size={30} color="black" />
+            <AntDesign name="home" size={30} color="black" />
           ),
         }}
       />
