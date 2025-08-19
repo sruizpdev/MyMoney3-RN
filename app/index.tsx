@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useAuth } from "../context/auth-context";
 
-export default function Login() {
+export default function Index() {
   const [pin, setPin] = useState("");
   const { signIn } = useAuth();
   const shakeAnim = useRef(new Animated.Value(0)).current;
