@@ -53,7 +53,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="expense-form"
+        name="add-expense"
         options={{
           title: "Gasto",
           tabBarIcon: ({ color }) => (

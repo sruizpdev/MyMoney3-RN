@@ -6,7 +6,8 @@ export const getTransactions = async (): Promise<Transaction[]> => {
   const { data, error } = await supabase
     .from("transactions")
     .select("*")
-    .order("date", { ascending: false });
+    .order("date", { ascending: false })
+    .order("id", { ascending: false });
 
   if (error) {
     console.error("Error fetching transactions:", error.message);
@@ -18,9 +19,11 @@ export const getTransactions = async (): Promise<Transaction[]> => {
 
 // Crear una nueva transacción
 export const addTransaction = async (transaction: Omit<Transaction, "id">) => {
+  // Aseguramos que devuelva la fila insertada
   const { data, error } = await supabase
     .from("transactions")
-    .insert([transaction]);
+    .insert([transaction])
+    .select("*"); // <--- importante para que devuelva la fila creada
 
   if (error) {
     console.error("Error adding transaction:", error.message);
