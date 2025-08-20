@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/auth-context";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
@@ -26,7 +27,11 @@ export default function TabLayout() {
             const { signOut } = useAuth();
             return (
               <Pressable onPress={signOut} style={{ marginRight: 15 }}>
-                <Ionicons name="log-out-outline" size={30} color="black" />
+                <MaterialCommunityIcons
+                  name="exit-run"
+                  size={30}
+                  color="black"
+                />
               </Pressable>
             );
           };

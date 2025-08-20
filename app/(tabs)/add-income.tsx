@@ -1,5 +1,6 @@
 // AddIncome.tsx
 import { incomeCategories } from "@/services/category-icons"; // solo ingresos
+import { incomeCategoryNames } from "@/services/category-names";
 import { addTransaction } from "@/services/supabase";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
@@ -101,20 +102,31 @@ export default function AddIncome() {
             key={category}
             onPress={() => setSelectedCategory(category)}
             style={({ pressed }) => ({
-              width: 60,
-              height: 60,
-              borderRadius: 8,
-              backgroundColor:
-                selectedCategory === category ? "#4CAF50" : "#ccc",
-              opacity: pressed ? 0.6 : 1,
+              width: 70,
               margin: 6,
               alignItems: "center",
-              justifyContent: "center",
+              opacity: pressed ? 0.6 : 1,
             })}
           >
-            {incomeCategories[category](
-              selectedCategory === category ? "white" : "black"
-            )}
+            <View
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 8,
+                borderWidth: selectedCategory === category ? 2 : 0,
+                borderColor: "#4CAF50",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {incomeCategories[category](
+                selectedCategory === category ? "#4CAF50" : "#555",
+                32
+              )}
+            </View>
+            <Text style={styles.categoryLabel}>
+              {incomeCategoryNames[category]}
+            </Text>
           </Pressable>
         ))}
       </View>
@@ -143,5 +155,11 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "flex-start",
     marginTop: 10,
+  },
+  categoryLabel: {
+    marginTop: 4,
+    fontSize: 12,
+    textAlign: "center",
+    color: "#333",
   },
 });

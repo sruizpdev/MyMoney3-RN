@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Transaction } from "../../interfaces";
 import { expenseCategories } from "../../services/category-icons";
+import { expenseCategoryNames } from "../../services/category-names";
 import {
   deleteTransaction,
   getTransactions,
@@ -128,26 +129,37 @@ export default function ExpenseDetails() {
       <Text>{transaction.type}</Text>
 
       <Text style={[styles.label, { marginTop: 20 }]}>Categoría</Text>
-      <View style={styles.categoriesContainer}>
+      <View style={styles.categoriesGrid}>
         {Object.keys(expenseCategories).map((category) => (
           <Pressable
             key={category}
             onPress={() => setSelectedCategory(category)}
             style={({ pressed }) => ({
-              width: 60,
-              height: 60,
-              borderRadius: 8,
-              backgroundColor:
-                selectedCategory === category ? "#4CAF50" : "#ccc",
-              opacity: pressed ? 0.6 : 1,
-              margin: 5,
+              width: 70,
+              margin: 6,
               alignItems: "center",
-              justifyContent: "center",
+              opacity: pressed ? 0.6 : 1,
             })}
           >
-            {expenseCategories[category](
-              selectedCategory === category ? "white" : "black"
-            )}
+            <View
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 8,
+                borderWidth: selectedCategory === category ? 2 : 0,
+                borderColor: "#4CAF50",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {expenseCategories[category](
+                selectedCategory === category ? "#4CAF50" : "#555",
+                32
+              )}
+            </View>
+            <Text style={styles.categoryLabel}>
+              {expenseCategoryNames[category]}
+            </Text>
           </Pressable>
         ))}
       </View>
@@ -162,10 +174,7 @@ export default function ExpenseDetails() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: "#fff",
-  },
+  container: { padding: 16, backgroundColor: "#fff" },
   label: { fontSize: 16, fontWeight: "500", marginTop: 12 },
   input: {
     borderWidth: 1,
@@ -176,10 +185,16 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   buttons: { marginTop: 24, flexDirection: "column", gap: 12 },
-  categoriesContainer: {
+  categoriesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "flex-start",
     marginTop: 10,
+  },
+  categoryLabel: {
+    marginTop: 4,
+    fontSize: 12,
+    textAlign: "center",
+    color: "#333",
   },
 });
