@@ -1,7 +1,17 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  Button,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { Transaction } from "../../interfaces";
+import { expenseCategories } from "../../services/category-icons";
 import {
   deleteTransaction,
   getTransactions,
@@ -13,6 +23,7 @@ export default function ExpenseDetails() {
   const [transaction, setTransaction] = useState<Transaction | null>(null);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     const fetchTransaction = async () => {
@@ -22,6 +33,7 @@ export default function ExpenseDetails() {
         setTransaction(found);
         setDescription(found.description);
         setAmount(String(found.amount));
+        setSelectedCategory(found.category);
       }
     };
     fetchTransaction();
@@ -39,6 +51,7 @@ export default function ExpenseDetails() {
       description,
       amount: parseFloat(amount),
       date: transaction.date,
+      category: selectedCategory,
     };
 
     try {
@@ -92,7 +105,7 @@ export default function ExpenseDetails() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.label}>Descripción</Text>
       <TextInput
         style={styles.input}
@@ -114,17 +127,45 @@ export default function ExpenseDetails() {
       <Text style={styles.label}>Tipo</Text>
       <Text>{transaction.type}</Text>
 
+      <Text style={[styles.label, { marginTop: 20 }]}>Categoría</Text>
+      <View style={styles.categoriesContainer}>
+        {Object.keys(expenseCategories).map((category) => (
+          <Pressable
+            key={category}
+            onPress={() => setSelectedCategory(category)}
+            style={({ pressed }) => ({
+              width: 60,
+              height: 60,
+              borderRadius: 8,
+              backgroundColor:
+                selectedCategory === category ? "#4CAF50" : "#ccc",
+              opacity: pressed ? 0.6 : 1,
+              margin: 5,
+              alignItems: "center",
+              justifyContent: "center",
+            })}
+          >
+            {expenseCategories[category](
+              selectedCategory === category ? "white" : "black"
+            )}
+          </Pressable>
+        ))}
+      </View>
+
       <View style={styles.buttons}>
         <Button title="Guardar cambios" onPress={handleSave} />
         <Button title="Eliminar" color="red" onPress={handleDelete} />
         <Button title="Cerrar" onPress={() => router.back()} />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  container: {
+    padding: 16,
+    backgroundColor: "#fff",
+  },
   label: { fontSize: 16, fontWeight: "500", marginTop: 12 },
   input: {
     borderWidth: 1,
@@ -135,4 +176,10 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   buttons: { marginTop: 24, flexDirection: "column", gap: 12 },
+  categoriesContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    marginTop: 10,
+  },
 });

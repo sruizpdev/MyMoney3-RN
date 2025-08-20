@@ -1,3 +1,4 @@
+// IncomeDetails.tsx
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -5,12 +6,14 @@ import {
   Alert,
   Button,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { Transaction } from "../../interfaces";
+import { incomeCategories } from "../../services/category-icons"; // <-- solo ingresos
 import {
   deleteTransaction,
   getTransactions,
@@ -24,16 +27,18 @@ export default function IncomeDetails() {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("salary");
 
   useEffect(() => {
     const fetchTransaction = async () => {
       const all = await getTransactions();
-      const found = all.find((t) => String(t.id) === id);
+      const found = all.find((t) => String(t.id) === id && t.type === "income");
       if (found) {
         setTransaction(found);
         setDescription(found.description);
         setAmount(String(found.amount));
         setDate(new Date(found.date));
+        setSelectedCategory(found.category || "salary");
       }
     };
     fetchTransaction();
@@ -51,6 +56,7 @@ export default function IncomeDetails() {
       description,
       amount: parseFloat(amount),
       date: date.toISOString().split("T")[0],
+      category: selectedCategory,
     };
 
     try {
@@ -67,7 +73,7 @@ export default function IncomeDetails() {
     const confirmed = await new Promise<boolean>((resolve) =>
       Alert.alert(
         "Confirmar eliminación",
-        `¿Eliminar esta transacción?\n\nDescripción: ${
+        `¿Eliminar este ingreso?\n\nDescripción: ${
           transaction.description
         }\nCantidad: ${transaction.amount} €\nFecha: ${date.toLocaleDateString(
           "es-ES"
@@ -130,6 +136,31 @@ export default function IncomeDetails() {
         />
       )}
 
+      <Text style={[styles.label, { marginTop: 20 }]}>Categoría</Text>
+      <View style={styles.categoriesContainer}>
+        {Object.keys(incomeCategories).map((category) => (
+          <Pressable
+            key={category}
+            onPress={() => setSelectedCategory(category)}
+            style={({ pressed }) => ({
+              width: 50,
+              height: 50,
+              borderRadius: 8,
+              backgroundColor:
+                selectedCategory === category ? "#4CAF50" : "#ccc",
+              opacity: pressed ? 0.6 : 1,
+              marginRight: 10,
+              alignItems: "center",
+              justifyContent: "center",
+            })}
+          >
+            {incomeCategories[category](
+              selectedCategory === category ? "white" : "black"
+            )}
+          </Pressable>
+        ))}
+      </View>
+
       <View style={styles.buttons}>
         <Button title="Guardar cambios" onPress={handleSave} />
         <Button title="Eliminar" color="red" onPress={handleDelete} />
@@ -149,6 +180,12 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     marginTop: 6,
+  },
+  categoriesContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginTop: 10,
+    gap: 10,
   },
   buttons: { marginTop: 24, flexDirection: "column", gap: 12 },
 });

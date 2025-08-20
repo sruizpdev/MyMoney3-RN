@@ -1,3 +1,6 @@
+// AddExpense.tsx
+import { expenseCategories } from "@/services/category-icons"; // <-- solo gastos
+import { addTransaction } from "@/services/supabase";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -5,18 +8,20 @@ import {
   Alert,
   Button,
   Platform,
+  Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import { addTransaction } from "../../services/supabase";
 
 export default function AddExpense() {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("other");
 
   const router = useRouter();
 
@@ -29,20 +34,19 @@ export default function AddExpense() {
     const newExpense = {
       description,
       amount: parseFloat(amount),
-      date: date.toISOString().split("T")[0], // YYYY-MM-DD
+      date: date.toISOString().split("T")[0],
       type: "expense" as const,
+      category: selectedCategory,
     };
 
     try {
       const saved = await addTransaction(newExpense);
 
       if (saved && saved.id) {
-        // limpiar campos
         setDescription("");
         setAmount("");
         setDate(new Date());
-
-        // volver al Home
+        setSelectedCategory("other");
         router.push("/(tabs)/home");
       } else {
         Alert.alert("Error", "No se pudo guardar el gasto");
@@ -54,7 +58,7 @@ export default function AddExpense() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.label}>Descripción</Text>
       <TextInput
         style={styles.input}
@@ -90,24 +94,41 @@ export default function AddExpense() {
         />
       )}
 
+      <Text style={[styles.label, { marginTop: 20 }]}>Categoría</Text>
+      <View style={styles.categoriesGrid}>
+        {Object.keys(expenseCategories).map((category) => (
+          <Pressable
+            key={category}
+            onPress={() => setSelectedCategory(category)}
+            style={({ pressed }) => ({
+              width: 60,
+              height: 60,
+              borderRadius: 8,
+              backgroundColor:
+                selectedCategory === category ? "#4CAF50" : "#ccc",
+              opacity: pressed ? 0.6 : 1,
+              margin: 6,
+              alignItems: "center",
+              justifyContent: "center",
+            })}
+          >
+            {expenseCategories[category](
+              selectedCategory === category ? "white" : "black"
+            )}
+          </Pressable>
+        ))}
+      </View>
+
       <View style={styles.saveButton}>
         <Button title="Guardar gasto" onPress={handleSave} />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 16,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginTop: 12,
-  },
+  container: { padding: 16 },
+  label: { fontSize: 16, fontWeight: "500", marginTop: 12 },
   input: {
     borderWidth: 1,
     borderColor: "#ddd",
@@ -116,7 +137,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 6,
   },
-  saveButton: {
-    marginTop: 24,
+  saveButton: { marginTop: 24 },
+  categoriesGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    marginTop: 10,
   },
 });
