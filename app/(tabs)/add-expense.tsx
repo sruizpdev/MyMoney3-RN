@@ -63,6 +63,7 @@ export default function AddExpense() {
     <ScrollView
       contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
       keyboardShouldPersistTaps="handled"
+      style={{ backgroundColor: theme.colors.background }}
     >
       {/* Inputs */}
       <TextInput
@@ -124,7 +125,7 @@ export default function AddExpense() {
             <View
               style={{
                 width: 60,
-                height: 60,
+                height: 40,
                 borderRadius: 8,
                 alignItems: "center",
                 justifyContent: "center",
@@ -138,7 +139,18 @@ export default function AddExpense() {
                 32
               )}
             </View>
-            <Text style={styles.categoryLabel}>
+            <Text
+              style={[
+                styles.categoryLabel,
+                {
+                  color:
+                    selectedCategory === category
+                      ? theme.colors.primary
+                      : theme.colors.onSurface,
+                  fontWeight: selectedCategory === category ? "600" : "400",
+                },
+              ]}
+            >
               {expenseCategoryNames[category]}
             </Text>
           </Pressable>
