@@ -1,5 +1,5 @@
 // AddExpense.tsx
-import { expenseCategories } from "@/services/category-icons"; // <-- solo gastos
+import { expenseCategories } from "@/services/category-icons";
 import { expenseCategoryNames } from "@/services/category-names";
 import { addTransaction } from "@/services/supabase";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -7,22 +7,21 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
-  Button,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
+import { Button as PaperButton, TextInput, useTheme } from "react-native-paper";
 
 export default function AddExpense() {
+  const theme = useTheme(); // Para usar color por defecto de Paper
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("other");
+  const [selectedCategory, setSelectedCategory] = useState<string>("food");
 
   const router = useRouter();
 
@@ -47,7 +46,7 @@ export default function AddExpense() {
         setDescription("");
         setAmount("");
         setDate(new Date());
-        setSelectedCategory("other");
+        setSelectedCategory("food");
         router.push("/(tabs)/home");
       } else {
         Alert.alert("Error", "No se pudo guardar el gasto");
@@ -58,36 +57,49 @@ export default function AddExpense() {
     }
   };
 
+  const openPicker = () => setShowPicker(true);
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>Descripción</Text>
+    <ScrollView
+      contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+      keyboardShouldPersistTaps="handled"
+    >
+      {/* Inputs */}
       <TextInput
-        style={styles.input}
-        placeholder="Ej: Supermercado"
+        mode="outlined"
+        label="Descripción"
+        placeholder="Ej: Mercadona"
         value={description}
         onChangeText={setDescription}
+        style={{ marginBottom: 16 }}
       />
 
-      <Text style={styles.label}>Cantidad (€)</Text>
       <TextInput
-        style={styles.input}
+        mode="outlined"
+        label="Cantidad (€)"
         placeholder="Ej: 45.90"
         value={amount}
         onChangeText={setAmount}
         keyboardType="numeric"
+        style={{ marginBottom: 16 }}
       />
 
-      <Text style={styles.label}>Fecha</Text>
-      <Button
-        title={date.toLocaleDateString("es-ES")}
-        onPress={() => setShowPicker(true)}
+      {/* Fecha */}
+      <TextInput
+        mode="outlined"
+        label="Fecha"
+        value={date.toLocaleDateString("es-ES")}
+        editable={false}
+        onPressIn={openPicker}
+        right={<TextInput.Icon icon="calendar" onPress={openPicker} />}
+        style={{ marginBottom: 16 }}
       />
 
       {showPicker && (
         <DateTimePicker
           value={date}
           mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
+          display="default"
           onChange={(_, selectedDate) => {
             setShowPicker(false);
             if (selectedDate) setDate(selectedDate);
@@ -95,7 +107,8 @@ export default function AddExpense() {
         />
       )}
 
-      <Text style={[styles.label, { marginTop: 20 }]}>Categoría</Text>
+      {/* Categorías */}
+      <Text style={[styles.label, { marginBottom: 8 }]}>Categoría</Text>
       <View style={styles.categoriesGrid}>
         {Object.keys(expenseCategories).map((category) => (
           <Pressable
@@ -113,14 +126,15 @@ export default function AddExpense() {
                 width: 60,
                 height: 60,
                 borderRadius: 8,
-                borderWidth: selectedCategory === category ? 2 : 0,
-                borderColor: "#4CAF50",
                 alignItems: "center",
                 justifyContent: "center",
+                backgroundColor: "transparent", // plano
               }}
             >
               {expenseCategories[category](
-                selectedCategory === category ? "#4CAF50" : "#555",
+                selectedCategory === category
+                  ? theme.colors.primary // color por defecto de Paper para seleccionado
+                  : theme.colors.onSurface,
                 32
               )}
             </View>
@@ -131,34 +145,28 @@ export default function AddExpense() {
         ))}
       </View>
 
-      <View style={styles.saveButton}>
-        <Button title="Guardar gasto" onPress={handleSave} />
-      </View>
+      {/* Guardar */}
+      <PaperButton
+        mode="contained"
+        onPress={handleSave}
+        style={{ marginTop: 24 }}
+      >
+        Guardar gasto
+      </PaperButton>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
   label: { fontSize: 16, fontWeight: "500", marginTop: 12 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
-    marginTop: 6,
-  },
-  saveButton: { marginTop: 24 },
   categoriesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "flex-start",
   },
   categoryLabel: {
-    marginTop: 4,
+    marginTop: 0,
     fontSize: 12,
     textAlign: "center",
-    color: "#333",
   },
 });

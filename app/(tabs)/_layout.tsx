@@ -60,7 +60,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="add-expense"
         options={{
-          title: "Gasto",
+          title: "Añadir Gasto",
           tabBarIcon: ({ color }) => (
             <Ionicons name="remove-circle-outline" size={30} color="black" />
           ),
