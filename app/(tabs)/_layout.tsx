@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/auth-context";
+import { colors } from "@/utils/globalStyles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -29,8 +30,8 @@ export default function TabLayout() {
               <Pressable onPress={signOut} style={{ marginRight: 15 }}>
                 <MaterialCommunityIcons
                   name="exit-run"
-                  size={30}
-                  color="black"
+                  size={24}
+                  color={colors.p3}
                 />
               </Pressable>
             );
