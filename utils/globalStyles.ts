@@ -46,7 +46,7 @@ export const globalStyles = StyleSheet.create({
     // Botones
     button: {
         paddingVertical: 14,
-        borderRadius: 8,
+        borderRadius: 50,
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: colors.p3,

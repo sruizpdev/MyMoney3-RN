@@ -1,14 +1,13 @@
-// AddIncome.tsx
 import { incomeCategories } from "@/services/category-icons"; // solo ingresos
 import { incomeCategoryNames } from "@/services/category-names";
 import { addTransaction } from "@/services/supabase";
+import { colors, globalStyles } from "@/utils/globalStyles";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
-  Button,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -23,6 +22,11 @@ export default function AddIncome() {
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("salary");
+
+  // Bordes dinámicos
+  const [descFocused, setDescFocused] = useState(false);
+  const [amountFocused, setAmountFocused] = useState(false);
+  const [dateFocused, setDateFocused] = useState(false);
 
   const router = useRouter();
 
@@ -58,108 +62,225 @@ export default function AddIncome() {
     }
   };
 
+  const openPicker = () => setShowPicker(true);
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>Descripción</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Ej: Sueldo"
-        value={description}
-        onChangeText={setDescription}
-      />
+    <ScrollView
+      contentContainerStyle={{
+        ...globalStyles.container,
+        flexGrow: 1,
+        paddingTop: 20,
+        paddingBottom: 20,
+      }}
+      keyboardShouldPersistTaps="handled"
+    >
+      {/* Título */}
+      <Text
+        style={{
+          fontSize: 20,
+          fontWeight: "600",
+          textAlign: "center",
+          marginBottom: 20,
+          color: colors.p3,
+        }}
+      >
+        Datos del ingreso
+      </Text>
 
-      <Text style={styles.label}>Cantidad (€)</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Ej: 1200.00"
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="numeric"
-      />
+      {/* Fecha y Cantidad */}
+      <View style={{ flexDirection: "row", marginBottom: 14 }}>
+        {/* Fecha */}
+        <Pressable
+          onPress={openPicker}
+          onPressIn={() => setDateFocused(true)}
+          onPressOut={() => setDateFocused(false)}
+          style={[
+            globalStyles.input,
+            {
+              flex: 1,
+              flexDirection: "row",
+              alignItems: "center",
+              paddingHorizontal: 10,
+              marginRight: 12,
+              borderColor: showPicker || dateFocused ? colors.p3 : colors.p4,
+            },
+          ]}
+        >
+          <Ionicons
+            name="calendar-number-outline"
+            size={20}
+            color={colors.p1}
+          />
+          <Text
+            style={[
+              globalStyles.textBold,
+              { color: colors.p3, marginLeft: 8, fontSize: 16 },
+            ]}
+          >
+            {date.toLocaleDateString("es-ES")}
+          </Text>
+        </Pressable>
 
-      <Text style={styles.label}>Fecha</Text>
-      <Button
-        title={date.toLocaleDateString("es-ES")}
-        onPress={() => setShowPicker(true)}
-      />
+        {/* Cantidad */}
+        <View
+          style={[
+            globalStyles.input,
+            {
+              flex: 1,
+              flexDirection: "row",
+              alignItems: "center",
+              paddingHorizontal: 10,
+              borderColor: amountFocused ? colors.p3 : colors.p4,
+            },
+          ]}
+        >
+          <Ionicons name="logo-euro" size={20} color={colors.p1} />
+          <TextInput
+            placeholder="Ej. 1200.00"
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+            onFocus={() => setAmountFocused(true)}
+            onBlur={() => setAmountFocused(false)}
+            style={[
+              globalStyles.text,
+              {
+                flex: 1,
+                color: amount ? colors.p3 : colors.p1,
+                fontWeight: amount ? "600" : "400",
+                marginLeft: 8,
+              },
+            ]}
+            placeholderTextColor={colors.p4}
+          />
+        </View>
+      </View>
 
       {showPicker && (
         <DateTimePicker
           value={date}
           mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
+          display="default"
           onChange={(_, selectedDate) => {
             setShowPicker(false);
+            setDateFocused(false);
             if (selectedDate) setDate(selectedDate);
           }}
         />
       )}
 
-      <Text style={[styles.label, { marginTop: 20 }]}>Categoría</Text>
-      <View style={styles.categoriesGrid}>
-        {Object.keys(incomeCategories).map((category) => (
-          <Pressable
-            key={category}
-            onPress={() => setSelectedCategory(category)}
-            style={({ pressed }) => ({
-              width: 70,
-              margin: 6,
+      {/* Descripción */}
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginBottom: 14 }}
+      >
+        <View
+          style={[
+            globalStyles.input,
+            {
+              flex: 1,
+              flexDirection: "row",
               alignItems: "center",
-              opacity: pressed ? 0.6 : 1,
-            })}
-          >
-            <View
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: 8,
-                borderWidth: selectedCategory === category ? 2 : 0,
-                borderColor: "#4CAF50",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {incomeCategories[category](
-                selectedCategory === category ? "#4CAF50" : "#555",
-                32
-              )}
-            </View>
-            <Text style={styles.categoryLabel}>
-              {incomeCategoryNames[category]}
-            </Text>
-          </Pressable>
-        ))}
+              borderColor: descFocused ? colors.p3 : colors.p4,
+            },
+          ]}
+        >
+          <Feather name="edit" size={20} color={colors.p1} />
+          <TextInput
+            placeholder="Ej. Sueldo"
+            value={description}
+            onChangeText={setDescription}
+            onFocus={() => setDescFocused(true)}
+            onBlur={() => setDescFocused(false)}
+            style={[
+              globalStyles.text,
+              {
+                flex: 1,
+                color: description ? colors.p3 : colors.p1,
+                fontWeight: description ? "600" : "400",
+                marginLeft: 8,
+              },
+            ]}
+            placeholderTextColor={colors.p4}
+          />
+        </View>
       </View>
 
-      <View style={styles.saveButton}>
-        <Button title="Guardar ingreso" onPress={handleSave} />
+      {/* Categorías */}
+      <Text style={[globalStyles.label, { textAlign: "center" }]}>
+        Categoría del ingreso:
+      </Text>
+      <View style={styles.categoriesGrid}>
+        {Object.keys(incomeCategories).map((category) => {
+          const isSelected = selectedCategory === category;
+          const color = isSelected ? colors.p3 : colors.p1;
+          return (
+            <Pressable
+              key={category}
+              onPress={() => setSelectedCategory(category)}
+              style={({ pressed }) => ({
+                width: 70,
+                margin: 6,
+                alignItems: "center",
+                opacity: pressed ? 0.6 : 1,
+              })}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 38,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {incomeCategories[category](color, 32)}
+              </View>
+              <Text
+                style={[
+                  styles.categoryLabel,
+                  { color, fontWeight: isSelected ? "600" : "400" },
+                ]}
+              >
+                {incomeCategoryNames[category]}
+              </Text>
+            </Pressable>
+          );
+        })}
       </View>
+
+      {/* Botón Guardar */}
+      <Pressable style={globalStyles.button} onPress={handleSave}>
+        <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
+          Guardar ingreso
+        </Text>
+      </Pressable>
+
+      {/* Botón Cancelar */}
+      <Pressable style={{ marginVertical: 10 }}>
+        <Link href="/(tabs)/home" asChild>
+          <Text
+            style={{
+              color: colors.p2,
+              fontWeight: "400",
+              textAlign: "center",
+              marginTop: 10,
+            }}
+          >
+            Cancelar
+          </Text>
+        </Link>
+      </Pressable>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
-  label: { fontSize: 16, fontWeight: "500", marginTop: 12 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
-    marginTop: 6,
-  },
-  saveButton: { marginTop: 24 },
   categoriesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "flex-start",
-    marginTop: 10,
   },
   categoryLabel: {
-    marginTop: 4,
-    fontSize: 12,
+    fontSize: 14,
     textAlign: "center",
-    color: "#333",
   },
 });
