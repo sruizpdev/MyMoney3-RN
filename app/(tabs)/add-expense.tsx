@@ -5,7 +5,7 @@ import { addTransaction } from "@/services/supabase";
 import { colors, globalStyles } from "@/utils/globalStyles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -228,6 +228,20 @@ export default function AddExpense() {
         <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
           Guardar gasto
         </Text>
+      </Pressable>
+      <Pressable style={{ marginVertical: 10 }}>
+        <Link href="/(tabs)/home" asChild>
+          <Text
+            style={{
+              color: colors.p2,
+              fontWeight: "400",
+              textAlign: "center",
+              marginTop: 30,
+            }}
+          >
+            Cancelar
+          </Text>
+        </Link>
       </Pressable>
     </ScrollView>
   );
