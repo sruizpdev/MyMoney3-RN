@@ -4,7 +4,7 @@ import { addTransaction } from "@/services/supabase";
 import { colors, globalStyles } from "@/utils/globalStyles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -69,23 +69,13 @@ export default function AddIncome() {
       contentContainerStyle={{
         ...globalStyles.container,
         flexGrow: 1,
-        paddingTop: 20,
-        paddingBottom: 20,
       }}
-      keyboardShouldPersistTaps="handled"
+      keyboardShouldPersistTaps="always"
+      style={{ marginTop: 80 }}
     >
       {/* Título */}
-      <Text
-        style={{
-          fontSize: 20,
-          fontWeight: "600",
-          textAlign: "center",
-          marginBottom: 20,
-          color: colors.p3,
-        }}
-      >
-        Datos del ingreso
-      </Text>
+
+      <Text style={globalStyles.screenTitle}>Añadir nuevo Ingreso</Text>
 
       {/* Fecha y Cantidad */}
       <View style={{ flexDirection: "row", marginBottom: 14 }}>
@@ -252,22 +242,6 @@ export default function AddIncome() {
         <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
           Guardar ingreso
         </Text>
-      </Pressable>
-
-      {/* Botón Cancelar */}
-      <Pressable style={{ marginVertical: 10 }}>
-        <Link href="/(tabs)/home" asChild>
-          <Text
-            style={{
-              color: colors.p2,
-              fontWeight: "400",
-              textAlign: "center",
-              marginTop: 10,
-            }}
-          >
-            Cancelar
-          </Text>
-        </Link>
       </Pressable>
     </ScrollView>
   );

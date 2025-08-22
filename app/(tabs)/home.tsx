@@ -1,3 +1,4 @@
+import { colors, globalStyles } from "@/utils/globalStyles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -53,87 +54,148 @@ export default function Home() {
         pressed && { opacity: 0.5 },
       ]}
     >
-      <View>
+      <View
+        style={{
+          marginRight: "2%",
+          width: "70%",
+        }}
+      >
         <Text style={styles.description}>{item.description}</Text>
         <Text style={styles.date}>
           {new Date(item.date).toLocaleDateString("es-ES")}
         </Text>
       </View>
-      <Text
-        style={[
-          styles.amount,
-          { color: item.type === "income" ? "green" : "red" },
-        ]}
+
+      <View
+        style={{
+          width: "28%",
+          alignItems: "flex-end",
+        }}
       >
-        {item.amount} €
-      </Text>
+        <Text
+          style={[
+            styles.amount,
+            { color: item.type === "income" ? "green" : "red" },
+          ]}
+        >
+          {item.type === "income" ? "+" : "-"}
+          {item.amount} €
+        </Text>
+      </View>
     </Pressable>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.mainContainer}>
       {balanceData && (
         <View style={styles.balanceContainer}>
-          <Text style={styles.month}>{balanceData.mes}</Text>
+          <Text style={globalStyles.title}>{balanceData.mes}</Text>
           <Text
             style={[
               styles.balance,
-              { color: balanceData.balance >= 0 ? "green" : "red" },
+              { color: balanceData.balance >= 0 ? colors.p1 : colors.p6 },
             ]}
           >
             {balanceData.balance.toFixed(2)} €
           </Text>
           <View style={styles.totalsRow}>
             <View style={styles.totalBox}>
-              <MaterialIcons name="arrow-downward" size={16} color="green" />
+              <MaterialIcons
+                name="arrow-downward"
+                size={16}
+                color={colors.p7}
+              />
               <Text style={styles.totalText}>{income.toFixed(2)} €</Text>
             </View>
             <View style={styles.totalBox}>
-              <MaterialIcons name="arrow-upward" size={16} color="red" />
+              <MaterialIcons name="arrow-upward" size={16} color={colors.p6} />
               <Text style={styles.totalText}>{expense.toFixed(2)} €</Text>
             </View>
           </View>
         </View>
       )}
-
       <FlatList
         data={transactions}
         keyExtractor={(item) => String(item.id)}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 10 }}
+        ListHeaderComponent={
+          <Text
+            style={[
+              globalStyles.title,
+              {
+                textAlign: "center",
+                marginBottom: 20,
+                textTransform: "uppercase",
+              },
+            ]}
+          >
+            Transacciones:
+          </Text>
+        }
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    backgroundColor: colors.bg,
   },
-  balanceContainer: { alignItems: "center", marginBottom: 16 },
-  month: { fontSize: 14, color: "#666", marginBottom: 4 },
-  balance: { fontSize: 32, fontWeight: "bold" },
+  balanceContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+    height: 170,
+    paddingTop: 60,
+    paddingHorizontal: 30,
+    backgroundColor: colors.p5,
+  },
+
+  balance: {
+    fontSize: 34,
+    fontWeight: "bold",
+  },
   totalsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
     marginTop: 8,
   },
-  totalBox: { flexDirection: "row", alignItems: "center" },
-  totalText: { fontSize: 14, fontWeight: "500", marginLeft: 4 },
+  totalBox: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  totalText: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginLeft: 4,
+    color: colors.p1,
+  },
 
   transactionItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 8,
   },
-  description: { fontSize: 16, fontWeight: "500" },
-  date: { fontSize: 12, color: "#666", marginTop: 2 },
-  amount: { fontSize: 16, fontWeight: "bold" },
-  separator: { height: 1, backgroundColor: "#e0e0e0" },
+  description: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: colors.p1,
+  },
+  date: {
+    fontSize: 12,
+    color: colors.p2,
+    marginTop: 2,
+  },
+  amount: {
+    fontSize: 16,
+    fontWeight: "400",
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.p4,
+  },
 });

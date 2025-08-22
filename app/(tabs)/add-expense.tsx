@@ -2,10 +2,10 @@
 import { expenseCategories } from "@/services/category-icons";
 import { expenseCategoryNames } from "@/services/category-names";
 import { addTransaction } from "@/services/supabase";
-import { colors, globalStyles } from "@/utils/globalStyles";
+import { colors, fontSize, globalStyles } from "@/utils/globalStyles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -68,8 +68,10 @@ export default function AddExpense() {
   return (
     <ScrollView
       contentContainerStyle={globalStyles.container}
-      keyboardShouldPersistTaps="handled"
+      keyboardShouldPersistTaps="always"
+      style={{ marginTop: 80 }}
     >
+      <Text style={globalStyles.screenTitle}>Añadir nuevo gasto</Text>
       <View style={{ flexDirection: "row", marginBottom: 14 }}>
         <Pressable
           onPress={openPicker}
@@ -83,7 +85,7 @@ export default function AddExpense() {
               alignItems: "center",
               paddingHorizontal: 10,
               marginRight: 12,
-              borderColor: showPicker || dateFocused ? colors.p3 : colors.p4,
+              borderColor: showPicker || dateFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -95,13 +97,28 @@ export default function AddExpense() {
           <Text
             style={[
               globalStyles.textBold,
-              { color: colors.p3, marginLeft: 8, fontSize: 16 },
+              {
+                color: colors.p1,
+                marginLeft: 8,
+                fontSize: fontSize.base,
+              },
             ]}
           >
             {date.toLocaleDateString("es-ES")}
           </Text>
         </Pressable>
-
+        {showPicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={(_, selectedDate) => {
+              setShowPicker(false);
+              setDateFocused(false);
+              if (selectedDate) setDate(selectedDate);
+            }}
+          />
+        )}
         <View
           style={[
             globalStyles.input,
@@ -110,8 +127,7 @@ export default function AddExpense() {
               flexDirection: "row",
               alignItems: "center",
               paddingHorizontal: 10,
-
-              borderColor: amountFocused ? colors.p3 : colors.p4,
+              borderColor: amountFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -127,7 +143,7 @@ export default function AddExpense() {
               globalStyles.text,
               {
                 flex: 1,
-                color: amount ? colors.p3 : colors.p1,
+                color: amount ? colors.p1 : colors.p4,
                 fontWeight: amount ? "600" : "400",
               },
             ]}
@@ -135,18 +151,6 @@ export default function AddExpense() {
           />
         </View>
       </View>
-      {showPicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={(_, selectedDate) => {
-            setShowPicker(false);
-            setDateFocused(false);
-            if (selectedDate) setDate(selectedDate);
-          }}
-        />
-      )}
 
       <View
         style={{ flexDirection: "row", alignItems: "center", marginBottom: 14 }}
@@ -158,7 +162,7 @@ export default function AddExpense() {
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              borderColor: descFocused ? colors.p3 : colors.p4,
+              borderColor: descFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -173,7 +177,7 @@ export default function AddExpense() {
               globalStyles.text,
               {
                 flex: 1,
-                color: description ? colors.p3 : colors.p1,
+                color: description ? colors.p1 : colors.p4,
                 fontWeight: description ? "600" : "400",
               },
             ]}
@@ -182,13 +186,13 @@ export default function AddExpense() {
         </View>
       </View>
 
-      <Text style={[globalStyles.label, { textAlign: "center" }]}>
+      <Text style={[globalStyles.title, { textAlign: "center" }]}>
         Categoría del gasto:
       </Text>
       <View style={styles.categoriesGrid}>
         {Object.keys(expenseCategories).map((category) => {
           const isSelected = selectedCategory === category;
-          const color = isSelected ? colors.p3 : colors.p1;
+          const color = isSelected ? colors.p5 : colors.p1;
 
           return (
             <Pressable
@@ -228,20 +232,6 @@ export default function AddExpense() {
         <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
           Guardar gasto
         </Text>
-      </Pressable>
-      <Pressable style={{ marginVertical: 10 }}>
-        <Link href="/(tabs)/home" asChild>
-          <Text
-            style={{
-              color: colors.p2,
-              fontWeight: "400",
-              textAlign: "center",
-              marginTop: 30,
-            }}
-          >
-            Cancelar
-          </Text>
-        </Link>
       </Pressable>
     </ScrollView>
   );
