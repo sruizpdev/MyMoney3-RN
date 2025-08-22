@@ -130,17 +130,7 @@ export default function ExpenseDetails() {
       keyboardShouldPersistTaps="handled"
     >
       {/* Título */}
-      <Text
-        style={{
-          fontSize: 16,
-          fontWeight: "600",
-          textAlign: "center",
-          marginBottom: 28,
-          color: colors.p3,
-        }}
-      >
-        Datos de la transacción
-      </Text>
+      <Text style={globalStyles.screenTitle}>Datos del Gasto</Text>
       {/* Fecha y Cantidad */}
       <View style={{ flexDirection: "row", marginBottom: 14 }}>
         {/* Fecha */}
@@ -156,7 +146,7 @@ export default function ExpenseDetails() {
               alignItems: "center",
               paddingHorizontal: 10,
               marginRight: 12,
-              borderColor: showPicker || dateFocused ? colors.p3 : colors.p4,
+              borderColor: showPicker || dateFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -168,7 +158,7 @@ export default function ExpenseDetails() {
           <Text
             style={[
               globalStyles.textBold,
-              { color: colors.p3, marginLeft: 8, fontSize: 16 },
+              { color: colors.p1, marginLeft: 8, fontSize: 16 },
             ]}
           >
             {date.toLocaleDateString("es-ES")}
@@ -184,7 +174,7 @@ export default function ExpenseDetails() {
               flexDirection: "row",
               alignItems: "center",
               paddingHorizontal: 10,
-              borderColor: amountFocused ? colors.p3 : colors.p4,
+              borderColor: amountFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -200,7 +190,7 @@ export default function ExpenseDetails() {
               globalStyles.text,
               {
                 flex: 1,
-                color: amount ? colors.p3 : colors.p1,
+                color: amount ? colors.p1 : colors.p4,
                 fontWeight: amount ? "600" : "400",
                 marginLeft: 8,
               },
@@ -232,7 +222,7 @@ export default function ExpenseDetails() {
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              borderColor: descFocused ? colors.p3 : colors.p4,
+              borderColor: descFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -247,7 +237,7 @@ export default function ExpenseDetails() {
               globalStyles.text,
               {
                 flex: 1,
-                color: description ? colors.p3 : colors.p1,
+                color: description ? colors.p1 : colors.p4,
                 fontWeight: description ? "600" : "400",
                 marginLeft: 8,
               },
@@ -257,13 +247,15 @@ export default function ExpenseDetails() {
         </View>
       </View>
       {/* Categorías */}
-      <Text style={[globalStyles.label, { textAlign: "center" }]}>
+      <Text
+        style={[globalStyles.label, { textAlign: "center", marginBottom: 15 }]}
+      >
         Categoría del gasto:
       </Text>
       <View style={styles.categoriesGrid}>
         {Object.keys(expenseCategories).map((category) => {
           const isSelected = selectedCategory === category;
-          const color = isSelected ? colors.p3 : colors.p1;
+          const color = isSelected ? colors.p5 : colors.p1;
           return (
             <Pressable
               key={category}
@@ -298,34 +290,24 @@ export default function ExpenseDetails() {
         })}
       </View>
       {/* Botón Guardar */}
-      <Pressable style={globalStyles.button} onPress={handleSave}>
+      <Pressable
+        style={[globalStyles.button, { marginTop: 30 }]}
+        onPress={handleSave}
+      >
         <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
           Guardar cambios
         </Text>
       </Pressable>
-      {/* Botón Eliminar */}
-      <Pressable
-        style={[
-          globalStyles.button,
-          { backgroundColor: "#f44336", marginTop: 12 },
-        ]}
-        onPress={handleDelete}
-      >
-        <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
-          Eliminar
-        </Text>
-      </Pressable>
-      {/* Botón Cancelar */}
-      <Pressable style={{ marginVertical: 10 }} onPress={() => router.back()}>
+      <Pressable style={{ marginVertical: 20 }} onPress={handleDelete}>
         <Text
           style={{
-            color: "#555",
+            color: "red",
             fontWeight: "400",
             textAlign: "center",
             marginTop: 10,
           }}
         >
-          Cancelar
+          Eliminar
         </Text>
       </Pressable>
     </ScrollView>

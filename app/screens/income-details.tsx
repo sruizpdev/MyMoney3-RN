@@ -119,25 +119,16 @@ export default function IncomeDetails() {
 
   return (
     <ScrollView
+      style={{ backgroundColor: colors.bg }}
       contentContainerStyle={{
         ...globalStyles.container,
         flexGrow: 1,
-        paddingTop: 20,
+        marginTop: 80,
         paddingBottom: 20,
       }}
       keyboardShouldPersistTaps="handled"
     >
-      <Text
-        style={{
-          fontSize: 20,
-          fontWeight: "600",
-          textAlign: "center",
-          marginBottom: 20,
-          color: colors.p3,
-        }}
-      >
-        Datos del ingreso
-      </Text>
+      <Text style={globalStyles.screenTitle}>Datos del Ingreso</Text>
 
       {/* Fecha y Cantidad */}
       <View style={{ flexDirection: "row", marginBottom: 14 }}>
@@ -154,7 +145,7 @@ export default function IncomeDetails() {
               alignItems: "center",
               paddingHorizontal: 10,
               marginRight: 12,
-              borderColor: showPicker || dateFocused ? colors.p3 : colors.p4,
+              borderColor: showPicker || dateFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -166,7 +157,7 @@ export default function IncomeDetails() {
           <Text
             style={[
               globalStyles.textBold,
-              { color: colors.p3, marginLeft: 8, fontSize: 16 },
+              { color: colors.p1, marginLeft: 8, fontSize: 16 },
             ]}
           >
             {date.toLocaleDateString("es-ES")}
@@ -182,7 +173,7 @@ export default function IncomeDetails() {
               flexDirection: "row",
               alignItems: "center",
               paddingHorizontal: 10,
-              borderColor: amountFocused ? colors.p3 : colors.p4,
+              borderColor: amountFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -198,7 +189,7 @@ export default function IncomeDetails() {
               globalStyles.text,
               {
                 flex: 1,
-                color: amount ? colors.p3 : colors.p1,
+                color: amount ? colors.p1 : colors.p4,
                 fontWeight: amount ? "600" : "400",
                 marginLeft: 8,
               },
@@ -232,7 +223,7 @@ export default function IncomeDetails() {
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              borderColor: descFocused ? colors.p3 : colors.p4,
+              borderColor: descFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -247,7 +238,7 @@ export default function IncomeDetails() {
               globalStyles.text,
               {
                 flex: 1,
-                color: description ? colors.p3 : colors.p1,
+                color: description ? colors.p1 : colors.p4,
                 fontWeight: description ? "600" : "400",
                 marginLeft: 8,
               },
@@ -258,19 +249,21 @@ export default function IncomeDetails() {
       </View>
 
       {/* Categorías */}
-      <Text style={[globalStyles.label, { textAlign: "center" }]}>
+      <Text
+        style={[globalStyles.label, { textAlign: "center", marginBottom: 20 }]}
+      >
         Categoría del ingreso:
       </Text>
       <View style={styles.categoriesGrid}>
         {Object.keys(incomeCategories).map((category) => {
           const isSelected = selectedCategory === category;
-          const color = isSelected ? colors.p3 : colors.p1;
+          const color = isSelected ? colors.p5 : colors.p1;
           return (
             <Pressable
               key={category}
               onPress={() => setSelectedCategory(category)}
               style={({ pressed }) => ({
-                width: 70,
+                width: 90,
                 margin: 6,
                 alignItems: "center",
                 opacity: pressed ? 0.6 : 1,
@@ -300,13 +293,16 @@ export default function IncomeDetails() {
       </View>
 
       {/* Botones */}
-      <Pressable style={globalStyles.button} onPress={handleSave}>
+      <Pressable
+        style={[globalStyles.button, { marginTop: 30 }]}
+        onPress={handleSave}
+      >
         <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
           Guardar cambios
         </Text>
       </Pressable>
 
-      <Pressable style={{ marginVertical: 10 }} onPress={handleDelete}>
+      <Pressable style={{ marginVertical: 20 }} onPress={handleDelete}>
         <Text
           style={{
             color: "red",
@@ -318,19 +314,6 @@ export default function IncomeDetails() {
           Eliminar
         </Text>
       </Pressable>
-
-      <Pressable style={{ marginVertical: 10 }} onPress={() => router.back()}>
-        <Text
-          style={{
-            color: colors.p2,
-            fontWeight: "400",
-            textAlign: "center",
-            marginTop: 10,
-          }}
-        >
-          Cancelar
-        </Text>
-      </Pressable>
     </ScrollView>
   );
 }
@@ -338,8 +321,8 @@ export default function IncomeDetails() {
 const styles = StyleSheet.create({
   categoriesGrid: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
+
+    justifyContent: "center",
   },
   categoryLabel: { fontSize: 14, textAlign: "center" },
 });

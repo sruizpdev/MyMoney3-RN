@@ -75,9 +75,8 @@ export default function AddIncome() {
     >
       {/* Título */}
 
-      <Text style={globalStyles.screenTitle}>Añadir nuevo Ingreso</Text>
+      <Text style={globalStyles.screenTitle}>Nuevo Ingreso</Text>
 
-      {/* Fecha y Cantidad */}
       <View style={{ flexDirection: "row", marginBottom: 14 }}>
         {/* Fecha */}
         <Pressable
@@ -92,7 +91,7 @@ export default function AddIncome() {
               alignItems: "center",
               paddingHorizontal: 10,
               marginRight: 12,
-              borderColor: showPicker || dateFocused ? colors.p3 : colors.p4,
+              borderColor: showPicker || dateFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -104,7 +103,7 @@ export default function AddIncome() {
           <Text
             style={[
               globalStyles.textBold,
-              { color: colors.p3, marginLeft: 8, fontSize: 16 },
+              { color: colors.p1, marginLeft: 8, fontSize: 16 },
             ]}
           >
             {date.toLocaleDateString("es-ES")}
@@ -120,7 +119,7 @@ export default function AddIncome() {
               flexDirection: "row",
               alignItems: "center",
               paddingHorizontal: 10,
-              borderColor: amountFocused ? colors.p3 : colors.p4,
+              borderColor: amountFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -136,7 +135,7 @@ export default function AddIncome() {
               globalStyles.text,
               {
                 flex: 1,
-                color: amount ? colors.p3 : colors.p1,
+                color: amount ? colors.p1 : colors.p4,
                 fontWeight: amount ? "600" : "400",
                 marginLeft: 8,
               },
@@ -170,7 +169,7 @@ export default function AddIncome() {
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              borderColor: descFocused ? colors.p3 : colors.p4,
+              borderColor: descFocused ? colors.p5 : colors.p4,
             },
           ]}
         >
@@ -185,7 +184,7 @@ export default function AddIncome() {
               globalStyles.text,
               {
                 flex: 1,
-                color: description ? colors.p3 : colors.p1,
+                color: description ? colors.p1 : colors.p4,
                 fontWeight: description ? "600" : "400",
                 marginLeft: 8,
               },
@@ -196,19 +195,21 @@ export default function AddIncome() {
       </View>
 
       {/* Categorías */}
-      <Text style={[globalStyles.label, { textAlign: "center" }]}>
+      <Text
+        style={[globalStyles.label, { textAlign: "center", marginBottom: 15 }]}
+      >
         Categoría del ingreso:
       </Text>
       <View style={styles.categoriesGrid}>
         {Object.keys(incomeCategories).map((category) => {
           const isSelected = selectedCategory === category;
-          const color = isSelected ? colors.p3 : colors.p1;
+          const color = isSelected ? colors.p5 : colors.p1;
           return (
             <Pressable
               key={category}
               onPress={() => setSelectedCategory(category)}
               style={({ pressed }) => ({
-                width: 70,
+                width: 90,
                 margin: 6,
                 alignItems: "center",
                 opacity: pressed ? 0.6 : 1,
@@ -238,7 +239,10 @@ export default function AddIncome() {
       </View>
 
       {/* Botón Guardar */}
-      <Pressable style={globalStyles.button} onPress={handleSave}>
+      <Pressable
+        style={[globalStyles.button, { marginTop: 30 }]}
+        onPress={handleSave}
+      >
         <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
           Guardar ingreso
         </Text>
@@ -251,7 +255,7 @@ const styles = StyleSheet.create({
   categoriesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start",
+    justifyContent: "center",
   },
   categoryLabel: {
     fontSize: 14,

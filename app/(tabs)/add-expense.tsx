@@ -71,7 +71,7 @@ export default function AddExpense() {
       keyboardShouldPersistTaps="always"
       style={{ marginTop: 80 }}
     >
-      <Text style={globalStyles.screenTitle}>Añadir nuevo gasto</Text>
+      <Text style={globalStyles.screenTitle}>Nuevo gasto</Text>
       <View style={{ flexDirection: "row", marginBottom: 14 }}>
         <Pressable
           onPress={openPicker}
@@ -186,7 +186,9 @@ export default function AddExpense() {
         </View>
       </View>
 
-      <Text style={[globalStyles.title, { textAlign: "center" }]}>
+      <Text
+        style={[globalStyles.title, { textAlign: "center", marginBottom: 15 }]}
+      >
         Categoría del gasto:
       </Text>
       <View style={styles.categoriesGrid}>
@@ -228,7 +230,10 @@ export default function AddExpense() {
         })}
       </View>
 
-      <Pressable style={globalStyles.button} onPress={handleSave}>
+      <Pressable
+        style={[globalStyles.button, { marginTop: 30 }]}
+        onPress={handleSave}
+      >
         <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
           Guardar gasto
         </Text>
