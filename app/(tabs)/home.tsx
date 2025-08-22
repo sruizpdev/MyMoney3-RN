@@ -5,6 +5,10 @@ import React, { useCallback, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { Transaction } from "../../interfaces";
 import {
+  expenseCategories,
+  incomeCategories,
+} from "../../services/category-icons";
+import {
   getMonthlyBalance,
   getMonthlyExpense,
   getMonthlyIncome,
@@ -46,44 +50,58 @@ export default function Home() {
     }
   };
 
-  const renderItem = ({ item }: { item: Transaction }) => (
-    <Pressable
-      onPress={() => handlePress(item)}
-      style={({ pressed }) => [
-        styles.transactionItem,
-        pressed && { opacity: 0.5 },
-      ]}
-    >
-      <View
-        style={{
-          marginRight: "2%",
-          width: "70%",
-        }}
-      >
-        <Text style={styles.description}>{item.description}</Text>
-        <Text style={styles.date}>
-          {new Date(item.date).toLocaleDateString("es-ES")}
-        </Text>
-      </View>
+  const renderItem = ({ item }: { item: Transaction }) => {
+    const IconFn =
+      item.type === "income"
+        ? incomeCategories[item.category]
+        : expenseCategories[item.category];
 
-      <View
-        style={{
-          width: "28%",
-          alignItems: "flex-end",
-        }}
+    return (
+      <Pressable
+        onPress={() => handlePress(item)}
+        style={({ pressed }) => [
+          styles.transactionItem,
+          pressed && { opacity: 0.5 },
+        ]}
       >
-        <Text
-          style={[
-            styles.amount,
-            { color: item.type === "income" ? "green" : "red" },
-          ]}
+        {/* Icono */}
+        <View
+          style={{
+            width: 40,
+            justifyContent: "center",
+          }}
         >
-          {item.type === "income" ? "+" : "-"}
-          {item.amount} €
-        </Text>
-      </View>
-    </Pressable>
-  );
+          {IconFn ? IconFn(colors.p1, 22) : null}
+        </View>
+
+        {/* Descripción */}
+        <View style={{ flex: 1 }}>
+          <Text style={styles.description}>{item.description}</Text>
+          <Text style={styles.date}>
+            {new Date(item.date).toLocaleDateString("es-ES")}
+          </Text>
+        </View>
+
+        {/* Amount */}
+        <View
+          style={{
+            width: 100,
+            alignItems: "flex-end",
+          }}
+        >
+          <Text
+            style={[
+              styles.amount,
+              { color: item.type === "income" ? "green" : "red" },
+            ]}
+          >
+            {item.type === "income" ? "+" : "-"}
+            {item.amount} €
+          </Text>
+        </View>
+      </Pressable>
+    );
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -177,7 +195,7 @@ const styles = StyleSheet.create({
 
   transactionItem: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
     paddingVertical: 8,
   },
   description: {
