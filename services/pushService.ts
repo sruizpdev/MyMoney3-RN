@@ -6,15 +6,13 @@ export const registerPushToken = async (token: string) => {
 
     const { data, error } = await supabase
         .from("push_tokens")
-        .insert([{ token }])
+        .upsert(
+            [{ token }],
+            { onConflict: "token" } // 👈 clave: evita duplicados en la columna "token"
+        )
         .select("*");
 
     if (error) {
-        // Si el token ya existe, podemos ignorar el error
-        if (error.code === "23505") {
-            console.log("Token ya registrado:", token);
-            return token;
-        }
         console.error("Error registrando token:", error.message);
         return null;
     }

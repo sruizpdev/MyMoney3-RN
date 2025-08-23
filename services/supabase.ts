@@ -2,7 +2,6 @@ import { Transaction } from "../interfaces";
 import { supabase } from "../utils/supabase";
 import { sendPushNotificationToOthers } from "./notificationServices";
 
-
 // --------------------
 // Funciones generales
 // --------------------
@@ -40,7 +39,7 @@ export const addTransaction = async (
 
   const insertedTransaction = data?.[0] || null;
 
-  // Enviar notificación al otro dispositivo
+  // 🔹 Enviar notificación al otro dispositivo (sin actorName)
   if (insertedTransaction) {
     await sendPushNotificationToOthers(
       {
@@ -73,7 +72,7 @@ export const updateTransaction = async (
 
   const updatedTransaction = data?.[0] || null;
 
-  // Enviar notificación al otro dispositivo
+  // 🔹 Enviar notificación al otro dispositivo (sin actorName)
   if (updatedTransaction) {
     await sendPushNotificationToOthers(
       {
@@ -106,6 +105,7 @@ export const deleteTransaction = async (
     return false;
   }
 
+  // 🔹 Enviar notificación al otro dispositivo (sin actorName)
   if (transactionData) {
     await sendPushNotificationToOthers(
       {

@@ -55,7 +55,7 @@ export default function Home() {
       }
 
       // Revisar si ya tenemos token local
-      let token = getPushToken(); // string | null
+      let token = await getPushToken(); // string | null
 
       if (!token) {
         const tokenData = await Notifications.getExpoPushTokenAsync();
