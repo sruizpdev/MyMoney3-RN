@@ -15,7 +15,7 @@ import {
   getMonthlyTransactions,
 } from "../../services/supabase";
 
-import { getPushToken, setPushToken } from "@/services/pushToken";
+import { setPushToken } from "@/services/pushToken";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { registerPushToken } from "../../services/pushService";
@@ -32,7 +32,6 @@ export default function Home() {
   // Registrar token push al iniciar
   useEffect(() => {
     const registerPushTokenAsync = async () => {
-      // Solo en dispositivos físicos
       if (!Device.isDevice) {
         console.log("Las notificaciones push requieren un dispositivo físico");
         return;
@@ -43,7 +42,6 @@ export default function Home() {
         await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
 
-      // Pedir permisos si no están concedidos
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
@@ -54,22 +52,14 @@ export default function Home() {
         return;
       }
 
-      // Revisar si ya tenemos token local
-      let token = await getPushToken(); // string | null
+      // Obtener token del dispositivo
+      const tokenData = await Notifications.getExpoPushTokenAsync();
+      const newToken: string = tokenData.data;
+      console.log("Expo Push Token obtenido:", newToken);
 
-      if (!token) {
-        const tokenData = await Notifications.getExpoPushTokenAsync();
-        console.log("Expo Push Token:", tokenData.data);
-
-        const newToken: string = tokenData.data; // explicitamos string
-        setPushToken(newToken); // no await, es sincrónica
-        console.log("Expo Push Token:", newToken);
-
-        // Registrar token en Supabase
-        await registerPushToken(newToken);
-      } else {
-        console.log("Token ya registrado localmente:", token);
-      }
+      // Guardar en localStorage y registrar en Supabase
+      await setPushToken(newToken); // guardar localmente
+      await registerPushToken(newToken); // registrar en la base de datos
     };
 
     registerPushTokenAsync();

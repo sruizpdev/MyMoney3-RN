@@ -29,6 +29,10 @@ export const sendPushNotificationToOthers = async (
             .flatMap(t => t.token ? [t.token] : [])
             .filter(t => t !== tokenToIgnore);
 
+
+        console.log("Tokens desde Supabase:", tokens);
+        console.log("Tokens a enviar después de filtrar:", tokensToSend);
+
         if (tokensToSend.length === 0) return;
 
         // 3️⃣ Enviar notificación en paralelo
@@ -48,7 +52,7 @@ export const sendPushNotificationToOthers = async (
                             body: payload.body,
                         }),
                     });
-
+                    console.log("Respuesta de Expo Push:", await response.text());
                     if (!response.ok) {
                         console.error("Error sending push to", token, await response.text());
                     }

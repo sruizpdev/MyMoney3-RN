@@ -39,6 +39,14 @@ export const addTransaction = async (
 
   const insertedTransaction = data?.[0] || null;
 
+
+  console.log("Enviando notificación a otros, token a ignorar:", currentDeviceToken);
+  console.log("Payload:", {
+    title: "Nueva transacción",
+    body: `${transaction.type === "income" ? "Ingreso" : "Gasto"}: ${transaction.description} (${transaction.amount} €)`,
+  });
+
+
   // 🔹 Enviar notificación al otro dispositivo (sin actorName)
   if (insertedTransaction) {
     await sendPushNotificationToOthers(

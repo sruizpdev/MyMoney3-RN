@@ -45,7 +45,7 @@ export default function AddIncome() {
     };
 
     try {
-      const token = getPushToken();
+      const token = await getPushToken();
       if (!token) {
         Alert.alert("Error", "No se pudo obtener el token de notificación");
         return;
