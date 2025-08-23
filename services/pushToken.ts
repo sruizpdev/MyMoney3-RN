@@ -1,8 +1,18 @@
 // services/pushToken.ts
-let token: string | null = null;
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const setPushToken = (t: string) => {
+let token: string | null = null;
+const TOKEN_KEY = "PUSH_TOKEN";
+
+export const setPushToken = async (t: string) => {
     token = t;
+    await AsyncStorage.setItem(TOKEN_KEY, t);
 };
 
-export const getPushToken = (): string | null => token;
+export const getPushToken = async (): Promise<string | null> => {
+    if (token) return token;
+
+    const storedToken = await AsyncStorage.getItem(TOKEN_KEY);
+    token = storedToken;
+    return storedToken;
+};

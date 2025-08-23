@@ -1,7 +1,7 @@
 import { colors, globalStyles } from "@/utils/globalStyles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { Transaction } from "../../interfaces";
 import {
@@ -15,11 +15,10 @@ import {
   getMonthlyTransactions,
 } from "../../services/supabase";
 
-import { setPushToken } from "@/services/pushToken";
+import { getPushToken, setPushToken } from "@/services/pushToken";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import { useEffect } from "react";
-import { registerPushToken } from "../../services/pushService"; // ajusta la ruta si es distinta
+import { registerPushToken } from "../../services/pushService";
 
 export default function Home() {
   const [balanceData, setBalanceData] = useState<{
@@ -30,17 +29,21 @@ export default function Home() {
   const [expense, setExpense] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
+  // Registrar token push al iniciar
   useEffect(() => {
-    const registerToken = async () => {
+    const registerPushTokenAsync = async () => {
+      // Solo en dispositivos físicos
       if (!Device.isDevice) {
         console.log("Las notificaciones push requieren un dispositivo físico");
         return;
       }
 
-      // Pedir permisos
+      // Revisar permisos existentes
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
+
+      // Pedir permisos si no están concedidos
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
@@ -51,20 +54,28 @@ export default function Home() {
         return;
       }
 
-      // Obtener token
-      const tokenData = await Notifications.getExpoPushTokenAsync();
-      const token = tokenData.data;
-      setPushToken(token);
+      // Revisar si ya tenemos token local
+      let token = getPushToken(); // string | null
 
-      console.log("Expo Push Token:", token);
+      if (!token) {
+        const tokenData = await Notifications.getExpoPushTokenAsync();
+        console.log("Expo Push Token:", tokenData.data);
 
-      // Registrar en Supabase
-      await registerPushToken(token);
+        const newToken: string = tokenData.data; // explicitamos string
+        setPushToken(newToken); // no await, es sincrónica
+        console.log("Expo Push Token:", newToken);
+
+        // Registrar token en Supabase
+        await registerPushToken(newToken);
+      } else {
+        console.log("Token ya registrado localmente:", token);
+      }
     };
 
-    registerToken();
+    registerPushTokenAsync();
   }, []);
 
+  // Traer datos al enfocar la pantalla
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -83,6 +94,7 @@ export default function Home() {
     }, [])
   );
 
+  // Navegación a detalle
   const handlePress = (item: Transaction) => {
     if (item.type === "income") {
       router.push(`/screens/income-details?id=${item.id}`);
@@ -91,6 +103,7 @@ export default function Home() {
     }
   };
 
+  // Render de cada transacción
   const renderItem = ({ item }: { item: Transaction }) => {
     const IconFn =
       item.type === "income"
@@ -105,17 +118,10 @@ export default function Home() {
           pressed && { opacity: 0.5 },
         ]}
       >
-        {/* Icono */}
-        <View
-          style={{
-            width: 40,
-            justifyContent: "center",
-          }}
-        >
+        <View style={{ width: 40, justifyContent: "center" }}>
           {IconFn ? IconFn(colors.p1, 22) : null}
         </View>
 
-        {/* Descripción */}
         <View style={{ flex: 1 }}>
           <Text style={styles.description}>{item.description}</Text>
           <Text style={styles.date}>
@@ -123,13 +129,7 @@ export default function Home() {
           </Text>
         </View>
 
-        {/* Amount */}
-        <View
-          style={{
-            width: 100,
-            alignItems: "flex-end",
-          }}
-        >
+        <View style={{ width: 100, alignItems: "flex-end" }}>
           <Text
             style={[
               styles.amount,
@@ -200,10 +200,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
+  mainContainer: { flex: 1, backgroundColor: colors.bg },
   balanceContainer: {
     alignItems: "center",
     marginBottom: 20,
@@ -212,49 +209,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     backgroundColor: colors.p5,
   },
-
-  balance: {
-    fontSize: 34,
-    fontWeight: "bold",
-  },
+  balance: { fontSize: 34, fontWeight: "bold" },
   totalsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
     marginTop: 8,
   },
-  totalBox: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  totalBox: { flexDirection: "row", alignItems: "center" },
   totalText: {
     fontSize: 14,
     fontWeight: "500",
     marginLeft: 4,
     color: colors.p1,
   },
-
-  transactionItem: {
-    flexDirection: "row",
-    // justifyContent: "space-between",
-    paddingVertical: 8,
-  },
-  description: {
-    fontSize: 16,
-    fontWeight: "400",
-    color: colors.p1,
-  },
-  date: {
-    fontSize: 12,
-    color: colors.p2,
-    marginTop: 2,
-  },
-  amount: {
-    fontSize: 16,
-    fontWeight: "400",
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.p4,
-  },
+  transactionItem: { flexDirection: "row", paddingVertical: 8 },
+  description: { fontSize: 16, fontWeight: "400", color: colors.p1 },
+  date: { fontSize: 12, color: colors.p2, marginTop: 2 },
+  amount: { fontSize: 16, fontWeight: "400" },
+  separator: { height: 1, backgroundColor: colors.p4 },
 });

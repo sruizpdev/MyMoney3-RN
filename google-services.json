@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "193377489000",
+    "project_id": "mymoney3-pushnotifications",
+    "storage_bucket": "mymoney3-pushnotifications.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:193377489000:android:e0aa93758b4b352dc5abdd",
+        "android_client_info": {
+          "package_name": "com.estiercolsoft.mymoney3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDh0jvnhn6cokcRyHpqRRKQZEg5j3_sg7E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
