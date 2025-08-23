@@ -1,5 +1,7 @@
 import { Transaction } from "../interfaces";
 import { supabase } from "../utils/supabase";
+import { sendPushNotificationToOthers } from "./notificationServices";
+
 
 // --------------------
 // Funciones generales
@@ -22,7 +24,10 @@ export const getTransactions = async (): Promise<Transaction[]> => {
 };
 
 // Crear una nueva transacción
-export const addTransaction = async (transaction: Omit<Transaction, "id">) => {
+export const addTransaction = async (
+  transaction: Omit<Transaction, "id">,
+  currentDeviceToken: string
+) => {
   const { data, error } = await supabase
     .from("transactions")
     .insert([transaction])
@@ -33,13 +38,27 @@ export const addTransaction = async (transaction: Omit<Transaction, "id">) => {
     return null;
   }
 
-  return data?.[0] || null;
+  const insertedTransaction = data?.[0] || null;
+
+  // Enviar notificación al otro dispositivo
+  if (insertedTransaction) {
+    await sendPushNotificationToOthers(
+      {
+        title: "Nueva transacción",
+        body: `${transaction.type === "income" ? "Ingreso" : "Gasto"}: ${transaction.description} (${transaction.amount} €)`,
+      },
+      currentDeviceToken
+    );
+  }
+
+  return insertedTransaction;
 };
 
 // Actualizar transacción
 export const updateTransaction = async (
   id: string,
-  updated: Partial<Transaction>
+  updated: Partial<Transaction>,
+  currentDeviceToken: string
 ) => {
   const { data, error } = await supabase
     .from("transactions")
@@ -52,16 +71,49 @@ export const updateTransaction = async (
     return null;
   }
 
-  return data?.[0] || null;
+  const updatedTransaction = data?.[0] || null;
+
+  // Enviar notificación al otro dispositivo
+  if (updatedTransaction) {
+    await sendPushNotificationToOthers(
+      {
+        title: "Transacción modificada",
+        body: `${updatedTransaction.type === "income" ? "Ingreso" : "Gasto"}: ${updatedTransaction.description} (${updatedTransaction.amount} €)`,
+      },
+      currentDeviceToken
+    );
+  }
+
+  return updatedTransaction;
 };
 
 // Borrar transacción por id
-export const deleteTransaction = async (id: string) => {
+export const deleteTransaction = async (
+  id: string,
+  currentDeviceToken: string
+) => {
+  // Obtener la transacción antes de borrarla para el mensaje
+  const { data: transactionData } = await supabase
+    .from("transactions")
+    .select("*")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("transactions").delete().eq("id", id);
 
   if (error) {
     console.error("Error deleting transaction:", error.message);
     return false;
+  }
+
+  if (transactionData) {
+    await sendPushNotificationToOthers(
+      {
+        title: "Transacción eliminada",
+        body: `${transactionData.type === "income" ? "Ingreso" : "Gasto"}: ${transactionData.description} (${transactionData.amount} €)`,
+      },
+      currentDeviceToken
+    );
   }
 
   return true;

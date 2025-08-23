@@ -1,5 +1,6 @@
-import { incomeCategories } from "@/services/category-icons"; // solo ingresos
+import { incomeCategories } from "@/services/category-icons";
 import { incomeCategoryNames } from "@/services/category-names";
+import { getPushToken } from "@/services/pushToken";
 import { addTransaction } from "@/services/supabase";
 import { colors, globalStyles } from "@/utils/globalStyles";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -23,7 +24,6 @@ export default function AddIncome() {
   const [showPicker, setShowPicker] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("salary");
 
-  // Bordes dinámicos
   const [descFocused, setDescFocused] = useState(false);
   const [amountFocused, setAmountFocused] = useState(false);
   const [dateFocused, setDateFocused] = useState(false);
@@ -45,9 +45,20 @@ export default function AddIncome() {
     };
 
     try {
-      const saved = await addTransaction(newIncome);
+      const token = getPushToken();
+      if (!token) {
+        Alert.alert("Error", "No se pudo obtener el token de notificación");
+        return;
+      }
+
+      const saved = await addTransaction(newIncome, token);
 
       if (saved && saved.id) {
+        // await sendPushNotificationToOthers(
+        //   { title: "Nuevo ingreso", body: `${description} - ${amount} €` },
+        //   token
+        // );
+
         setDescription("");
         setAmount("");
         setDate(new Date());
@@ -66,19 +77,13 @@ export default function AddIncome() {
 
   return (
     <ScrollView
-      contentContainerStyle={{
-        ...globalStyles.container,
-        flexGrow: 1,
-      }}
+      contentContainerStyle={{ ...globalStyles.container, flexGrow: 1 }}
       keyboardShouldPersistTaps="always"
       style={{ marginTop: 80 }}
     >
-      {/* Título */}
-
       <Text style={globalStyles.screenTitle}>Nuevo Ingreso</Text>
 
       <View style={{ flexDirection: "row", marginBottom: 14 }}>
-        {/* Fecha */}
         <Pressable
           onPress={openPicker}
           onPressIn={() => setDateFocused(true)}
@@ -110,7 +115,6 @@ export default function AddIncome() {
           </Text>
         </Pressable>
 
-        {/* Cantidad */}
         <View
           style={[
             globalStyles.input,
@@ -158,7 +162,6 @@ export default function AddIncome() {
         />
       )}
 
-      {/* Descripción */}
       <View
         style={{ flexDirection: "row", alignItems: "center", marginBottom: 14 }}
       >
@@ -194,7 +197,6 @@ export default function AddIncome() {
         </View>
       </View>
 
-      {/* Categorías */}
       <Text
         style={[globalStyles.label, { textAlign: "center", marginBottom: 15 }]}
       >
@@ -238,7 +240,6 @@ export default function AddIncome() {
         })}
       </View>
 
-      {/* Botón Guardar */}
       <Pressable
         style={[globalStyles.button, { marginTop: 30 }]}
         onPress={handleSave}

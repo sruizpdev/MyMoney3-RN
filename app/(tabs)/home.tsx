@@ -15,6 +15,12 @@ import {
   getMonthlyTransactions,
 } from "../../services/supabase";
 
+import { setPushToken } from "@/services/pushToken";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import { useEffect } from "react";
+import { registerPushToken } from "../../services/pushService"; // ajusta la ruta si es distinta
+
 export default function Home() {
   const [balanceData, setBalanceData] = useState<{
     balance: number;
@@ -23,6 +29,41 @@ export default function Home() {
   const [income, setIncome] = useState(0);
   const [expense, setExpense] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    const registerToken = async () => {
+      if (!Device.isDevice) {
+        console.log("Las notificaciones push requieren un dispositivo físico");
+        return;
+      }
+
+      // Pedir permisos
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== "granted") {
+        console.log("Permisos de notificación no concedidos");
+        return;
+      }
+
+      // Obtener token
+      const tokenData = await Notifications.getExpoPushTokenAsync();
+      const token = tokenData.data;
+      setPushToken(token);
+
+      console.log("Expo Push Token:", token);
+
+      // Registrar en Supabase
+      await registerPushToken(token);
+    };
+
+    registerToken();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

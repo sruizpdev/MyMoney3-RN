@@ -1,7 +1,7 @@
 import { colors, globalStyles } from "@/utils/globalStyles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -15,6 +15,7 @@ import {
 import { Transaction } from "../../interfaces";
 import { incomeCategories } from "../../services/category-icons";
 import { incomeCategoryNames } from "../../services/category-names";
+import { getPushToken } from "../../services/pushToken";
 import {
   deleteTransaction,
   getTransactions,
@@ -23,6 +24,8 @@ import {
 
 export default function IncomeDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+
   const [transaction, setTransaction] = useState<Transaction | null>(null);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -30,7 +33,6 @@ export default function IncomeDetails() {
   const [showPicker, setShowPicker] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  // Bordes dinámicos
   const [descFocused, setDescFocused] = useState(false);
   const [amountFocused, setAmountFocused] = useState(false);
   const [dateFocused, setDateFocused] = useState(false);
@@ -66,8 +68,25 @@ export default function IncomeDetails() {
     };
 
     try {
-      const result = await updateTransaction(String(transaction.id), updated);
+      const token = getPushToken();
+      if (!token) {
+        Alert.alert("Error", "No se pudo obtener el token de notificación");
+        return;
+      }
+
+      const result = await updateTransaction(
+        String(transaction.id),
+        updated,
+        token
+      );
       if (result) {
+        // await sendPushNotificationToOthers(
+        //   {
+        //     title: "Ingreso actualizado",
+        //     body: `${description} - ${amount} €`,
+        //   },
+        //   token
+        // );
         Alert.alert("Actualizado");
         router.back();
       } else {
@@ -102,8 +121,21 @@ export default function IncomeDetails() {
     if (!confirmed) return;
 
     try {
-      const success = await deleteTransaction(String(transaction.id));
+      const token = getPushToken();
+      if (!token) {
+        Alert.alert("Error", "No se pudo obtener el token de notificación");
+        return;
+      }
+
+      const success = await deleteTransaction(String(transaction.id), token);
       if (success) {
+        // await sendPushNotificationToOthers(
+        //   {
+        //     title: "Ingreso eliminado",
+        //     body: `${transaction.description} - ${transaction.amount} €`,
+        //   },
+        //   token
+        // );
         Alert.alert("Transacción eliminada");
         router.back();
       } else {
@@ -132,7 +164,6 @@ export default function IncomeDetails() {
 
       {/* Fecha y Cantidad */}
       <View style={{ flexDirection: "row", marginBottom: 14 }}>
-        {/* Fecha */}
         <Pressable
           onPress={openPicker}
           onPressIn={() => setDateFocused(true)}
@@ -164,7 +195,6 @@ export default function IncomeDetails() {
           </Text>
         </Pressable>
 
-        {/* Cantidad */}
         <View
           style={[
             globalStyles.input,
@@ -292,7 +322,6 @@ export default function IncomeDetails() {
         })}
       </View>
 
-      {/* Botones */}
       <Pressable
         style={[globalStyles.button, { marginTop: 30 }]}
         onPress={handleSave}
@@ -321,8 +350,8 @@ export default function IncomeDetails() {
 const styles = StyleSheet.create({
   categoriesGrid: {
     flexDirection: "row",
-
     justifyContent: "center",
+    flexWrap: "wrap",
   },
   categoryLabel: { fontSize: 14, textAlign: "center" },
 });

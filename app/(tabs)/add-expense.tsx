@@ -1,7 +1,8 @@
-// AddExpense.tsx
 import { expenseCategories } from "@/services/category-icons";
 import { expenseCategoryNames } from "@/services/category-names";
 import { addTransaction } from "@/services/supabase";
+
+import { getPushToken } from "@/services/pushToken";
 import { colors, fontSize, globalStyles } from "@/utils/globalStyles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -24,7 +25,6 @@ export default function AddExpense() {
   const [showPicker, setShowPicker] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("food");
 
-  // 👇 Solo lógica para cambiar color del borde (sin tocar estilos existentes)
   const [amountFocused, setAmountFocused] = useState(false);
   const [descFocused, setDescFocused] = useState(false);
   const [dateFocused, setDateFocused] = useState(false);
@@ -46,9 +46,20 @@ export default function AddExpense() {
     };
 
     try {
-      const saved = await addTransaction(newExpense);
+      const token = getPushToken();
+      if (!token) {
+        Alert.alert("Error", "No se pudo obtener el token de notificación");
+        return;
+      }
+
+      const saved = await addTransaction(newExpense, token);
 
       if (saved && saved.id) {
+        // await sendPushNotificationToOthers(
+        //   { title: "Nuevo gasto", body: `${description} - ${amount} €` },
+        //   token
+        // );
+
         setDescription("");
         setAmount("");
         setDate(new Date());

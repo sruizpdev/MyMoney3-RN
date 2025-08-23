@@ -14,6 +14,7 @@ import {
 import { Transaction } from "../../interfaces";
 import { expenseCategories } from "../../services/category-icons";
 import { expenseCategoryNames } from "../../services/category-names";
+import { getPushToken } from "../../services/pushToken";
 import {
   deleteTransaction,
   getTransactions,
@@ -68,8 +69,24 @@ export default function ExpenseDetails() {
     };
 
     try {
-      const result = await updateTransaction(String(transaction.id), updated);
+      const token = getPushToken();
+      if (!token) {
+        Alert.alert("Error", "No se pudo obtener el token de notificación");
+        return;
+      }
+
+      const result = await updateTransaction(
+        String(transaction.id),
+        updated,
+        token
+      );
       if (result) {
+        // Enviar notificación a otros dispositivos
+        // await sendPushNotificationToOthers(
+        //   { title: "Gasto actualizado", body: `${description} - ${amount} €` },
+        //   token
+        // );
+
         Alert.alert("Actualizado");
         router.back();
       } else {
@@ -104,8 +121,23 @@ export default function ExpenseDetails() {
     if (!confirmed) return;
 
     try {
-      const success = await deleteTransaction(String(transaction.id));
+      const token = getPushToken();
+      if (!token) {
+        Alert.alert("Error", "No se pudo obtener el token de notificación");
+        return;
+      }
+
+      const success = await deleteTransaction(String(transaction.id), token);
       if (success) {
+        // Enviar notificación a otros dispositivos
+        // await sendPushNotificationToOthers(
+        //   {
+        //     title: "Gasto eliminado",
+        //     body: `${transaction.description} - ${transaction.amount} €`,
+        //   },
+        //   token
+        // );
+
         Alert.alert("Transacción eliminada");
         router.back();
       } else {
@@ -129,11 +161,10 @@ export default function ExpenseDetails() {
       }}
       keyboardShouldPersistTaps="handled"
     >
-      {/* Título */}
       <Text style={globalStyles.screenTitle}>Datos del Gasto</Text>
+
       {/* Fecha y Cantidad */}
       <View style={{ flexDirection: "row", marginBottom: 14 }}>
-        {/* Fecha */}
         <Pressable
           onPress={openPicker}
           onPressIn={() => setDateFocused(true)}
@@ -165,7 +196,6 @@ export default function ExpenseDetails() {
           </Text>
         </Pressable>
 
-        {/* Cantidad */}
         <View
           style={[
             globalStyles.input,
@@ -199,6 +229,7 @@ export default function ExpenseDetails() {
           />
         </View>
       </View>
+
       {showPicker && (
         <DateTimePicker
           value={date}
@@ -211,6 +242,7 @@ export default function ExpenseDetails() {
           }}
         />
       )}
+
       {/* Descripción */}
       <View
         style={{ flexDirection: "row", alignItems: "center", marginBottom: 14 }}
@@ -246,6 +278,7 @@ export default function ExpenseDetails() {
           />
         </View>
       </View>
+
       {/* Categorías */}
       <Text
         style={[globalStyles.label, { textAlign: "center", marginBottom: 15 }]}
@@ -289,7 +322,7 @@ export default function ExpenseDetails() {
           );
         })}
       </View>
-      {/* Botón Guardar */}
+
       <Pressable
         style={[globalStyles.button, { marginTop: 30 }]}
         onPress={handleSave}
