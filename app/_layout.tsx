@@ -1,20 +1,29 @@
-// Root.tsx
 import { Stack } from "expo-router";
-import React from "react";
+import * as SplashScreen from "expo-splash-screen";
+import React, { useEffect } from "react";
 import { AuthProvider, useAuth } from "../context/auth-context";
-import { SplashScreenController } from "../splah";
 
-export default function Root() {
+SplashScreen.setOptions({ duration: 1000, fade: true });
+// Mantener splash visible hasta que decidamos ocultarlo
+SplashScreen.preventAutoHideAsync();
+
+export default function RootLayout() {
   return (
     <AuthProvider>
-      <SplashScreenController />
       <RootNavigator />
     </AuthProvider>
   );
 }
 
 function RootNavigator() {
-  const { session } = useAuth();
+  const { session, isLoading } = useAuth();
+
+  // Ocultar splash cuando la sesión haya sido cargada
+  useEffect(() => {
+    if (!isLoading) {
+      SplashScreen.hideAsync();
+    }
+  }, [isLoading]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

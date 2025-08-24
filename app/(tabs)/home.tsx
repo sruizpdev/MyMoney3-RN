@@ -2,7 +2,14 @@ import { colors, globalStyles } from "@/utils/globalStyles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Transaction } from "../../interfaces";
 import {
   expenseCategories,
@@ -28,40 +35,30 @@ export default function Home() {
   const [income, setIncome] = useState(0);
   const [expense, setExpense] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true); // <-- loader
 
   // Registrar token push al iniciar
   useEffect(() => {
     const registerPushTokenAsync = async () => {
       if (!Device.isDevice) {
-        console.log("Las notificaciones push requieren un dispositivo físico");
         return;
       }
-
-      // Revisar permisos existentes
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
-
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
-
       if (finalStatus !== "granted") {
-        console.log("Permisos de notificación no concedidos");
         return;
       }
-
-      // Obtener token del dispositivo
       const tokenData = await Notifications.getExpoPushTokenAsync();
       const newToken: string = tokenData.data;
       console.log("Expo Push Token obtenido:", newToken);
-
-      // Guardar en localStorage y registrar en Supabase
-      await setPushToken(newToken); // guardar localmente
-      await registerPushToken(newToken); // registrar en la base de datos
+      await setPushToken(newToken);
+      await registerPushToken(newToken);
     };
-
     registerPushTokenAsync();
   }, []);
 
@@ -69,6 +66,7 @@ export default function Home() {
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
+        setIsLoading(true); // <-- iniciar loader
         const bal = await getMonthlyBalance();
         const inc = await getMonthlyIncome();
         const exp = await getMonthlyExpense();
@@ -78,13 +76,13 @@ export default function Home() {
         setIncome(inc);
         setExpense(exp);
         setTransactions(trans);
+        setIsLoading(false); // <-- terminar loader
       };
 
       fetchData();
     }, [])
   );
 
-  // Navegación a detalle
   const handlePress = (item: Transaction) => {
     if (item.type === "income") {
       router.push(`/screens/income-details?id=${item.id}`);
@@ -93,7 +91,6 @@ export default function Home() {
     }
   };
 
-  // Render de cada transacción
   const renderItem = ({ item }: { item: Transaction }) => {
     const IconFn =
       item.type === "income"
@@ -133,6 +130,23 @@ export default function Home() {
       </Pressable>
     );
   };
+
+  // Mostrar loader mientras se cargan los datos
+  if (isLoading) {
+    return (
+      <View
+        style={[
+          styles.mainContainer,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.p1} />
+        <Text style={{ marginTop: 15, fontSize: 16, color: colors.p1 }}>
+          Cargando datos...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.mainContainer}>

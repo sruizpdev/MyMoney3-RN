@@ -12,8 +12,17 @@ import { useAuth } from "../context/auth-context";
 
 export default function Index() {
   const [pin, setPin] = useState("");
-  const { signIn } = useAuth();
+  const { session, isLoading, signIn } = useAuth();
   const shakeAnim = useRef(new Animated.Value(0)).current;
+
+  // Mientras se restaura sesión, no renderizamos nada
+  if (isLoading) return null;
+
+  // Si hay sesión → ir directo a Home
+  if (session) {
+    router.replace("/(tabs)/home");
+    return null;
+  }
 
   const handleKeyPress = async (num: string) => {
     if (pin.length < 4) {
@@ -22,9 +31,8 @@ export default function Index() {
 
       if (next.length === 4) {
         const success = await signIn(next);
-        if (success) {
-          router.replace("/(tabs)/home"); // ruta protegida
-        } else {
+        if (success) router.replace("/(tabs)/home");
+        else {
           triggerShake();
           setTimeout(() => setPin(""), 300);
         }
@@ -32,9 +40,7 @@ export default function Index() {
     }
   };
 
-  const handleDelete = () => {
-    setPin(pin.slice(0, -1));
-  };
+  const handleDelete = () => setPin(pin.slice(0, -1));
 
   const triggerShake = () => {
     Animated.sequence([
@@ -76,7 +82,6 @@ export default function Index() {
     onPress: () => void;
   }) => {
     const scale = useRef(new Animated.Value(1)).current;
-
     const animatePress = () => {
       Animated.sequence([
         Animated.timing(scale, {
@@ -91,15 +96,12 @@ export default function Index() {
         }),
       ]).start();
     };
-
-    const handlePress = () => {
-      animatePress();
-      onPress();
-    };
-
     return (
       <Pressable
-        onPress={handlePress}
+        onPress={() => {
+          animatePress();
+          onPress();
+        }}
         hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
       >
         <Animated.View style={[styles.key, { transform: [{ scale }] }]}>
@@ -137,15 +139,13 @@ export default function Index() {
         {rows.map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
             {row.map((n, i) => {
-              if (n === "⌫") {
+              if (n === "⌫")
                 return pin.length > 0 ? (
                   <AnimatedKey key={i} value="⌫" onPress={handleDelete} />
                 ) : (
-                  <View key={i} style={styles.keyEmpty} /> // espacio igual al resto
+                  <View key={i} style={styles.keyEmpty} />
                 );
-              }
               if (n === "") return <View key={i} style={styles.keyEmpty} />;
-
               return (
                 <AnimatedKey
                   key={i}

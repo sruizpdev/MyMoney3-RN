@@ -51,7 +51,6 @@ export default function AddExpense() {
         Alert.alert("Error", "No se pudo obtener el token de notificación");
         return;
       }
-      console.log("Token del dispositivo:", token); // Depuración
 
       const saved = await addTransaction(newExpense, token);
 
