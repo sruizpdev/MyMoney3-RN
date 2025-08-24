@@ -37,6 +37,6 @@ yarn-error.*
 *.tsbuildinfo
 
 notes.txt
-google-service-accout-key.json
+google-key.json
 google-services.json
 
