@@ -32,7 +32,6 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
@@ -42,13 +41,6 @@
         {
           "icon": "./assets/images/notification-icon.png",
           "color": "#ffffff"
-        }
-      ],[
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#FFFFFF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200
         }
       ]
     ],
