@@ -69,7 +69,7 @@ export default function ExpenseDetails() {
     };
 
     try {
-      const token = getPushToken();
+      const token = await getPushToken();
       if (!token) {
         Alert.alert("Error", "No se pudo obtener el token de notificación");
         return;
@@ -81,12 +81,6 @@ export default function ExpenseDetails() {
         token
       );
       if (result) {
-        // Enviar notificación a otros dispositivos
-        // await sendPushNotificationToOthers(
-        //   { title: "Gasto actualizado", body: `${description} - ${amount} €` },
-        //   token
-        // );
-
         Alert.alert("Actualizado");
         router.back();
       } else {
@@ -121,7 +115,7 @@ export default function ExpenseDetails() {
     if (!confirmed) return;
 
     try {
-      const token = getPushToken();
+      const token = await getPushToken();
       if (!token) {
         Alert.alert("Error", "No se pudo obtener el token de notificación");
         return;
@@ -129,15 +123,6 @@ export default function ExpenseDetails() {
 
       const success = await deleteTransaction(String(transaction.id), token);
       if (success) {
-        // Enviar notificación a otros dispositivos
-        // await sendPushNotificationToOthers(
-        //   {
-        //     title: "Gasto eliminado",
-        //     body: `${transaction.description} - ${transaction.amount} €`,
-        //   },
-        //   token
-        // );
-
         Alert.alert("Transacción eliminada");
         router.back();
       } else {
@@ -177,20 +162,20 @@ export default function ExpenseDetails() {
               alignItems: "center",
               paddingHorizontal: 10,
               marginRight: 12,
-              borderColor: showPicker || dateFocused ? colors.p5 : colors.p4,
+              borderColor:
+                showPicker || dateFocused
+                  ? colors.iconSelected
+                  : colors.iconPressed,
             },
           ]}
         >
           <Ionicons
             name="calendar-number-outline"
             size={20}
-            color={colors.p1}
+            color={colors.textPrimary}
           />
           <Text
-            style={[
-              globalStyles.textBold,
-              { color: colors.p1, marginLeft: 8, fontSize: 16 },
-            ]}
+            style={[{ color: colors.textPrimary, marginLeft: 8, fontSize: 16 }]}
           >
             {date.toLocaleDateString("es-ES")}
           </Text>
@@ -204,11 +189,13 @@ export default function ExpenseDetails() {
               flexDirection: "row",
               alignItems: "center",
               paddingHorizontal: 10,
-              borderColor: amountFocused ? colors.p5 : colors.p4,
+              borderColor: amountFocused
+                ? colors.iconSelected
+                : colors.iconPressed,
             },
           ]}
         >
-          <Ionicons name="logo-euro" size={20} color={colors.p1} />
+          <Ionicons name="logo-euro" size={20} color={colors.textPrimary} />
           <TextInput
             placeholder="Ej. 45.90"
             value={amount}
@@ -220,12 +207,12 @@ export default function ExpenseDetails() {
               globalStyles.text,
               {
                 flex: 1,
-                color: amount ? colors.p1 : colors.p4,
+                color: amount ? colors.textPrimary : colors.iconPressed,
                 fontWeight: amount ? "600" : "400",
                 marginLeft: 8,
               },
             ]}
-            placeholderTextColor={colors.p4}
+            placeholderTextColor={colors.iconPressed}
           />
         </View>
       </View>
@@ -254,11 +241,13 @@ export default function ExpenseDetails() {
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              borderColor: descFocused ? colors.p5 : colors.p4,
+              borderColor: descFocused
+                ? colors.iconSelected
+                : colors.iconPressed,
             },
           ]}
         >
-          <Feather name="edit" size={20} color={colors.p1} />
+          <Feather name="edit" size={20} color={colors.textPrimary} />
           <TextInput
             placeholder="Ej. Mercadona"
             value={description}
@@ -269,12 +258,12 @@ export default function ExpenseDetails() {
               globalStyles.text,
               {
                 flex: 1,
-                color: description ? colors.p1 : colors.p4,
+                color: description ? colors.textPrimary : colors.iconPressed,
                 fontWeight: description ? "600" : "400",
                 marginLeft: 8,
               },
             ]}
-            placeholderTextColor={colors.p4}
+            placeholderTextColor={colors.iconPressed}
           />
         </View>
       </View>
@@ -288,7 +277,7 @@ export default function ExpenseDetails() {
       <View style={styles.categoriesGrid}>
         {Object.keys(expenseCategories).map((category) => {
           const isSelected = selectedCategory === category;
-          const color = isSelected ? colors.p5 : colors.p1;
+          const color = isSelected ? colors.iconSelected : colors.textPrimary;
           return (
             <Pressable
               key={category}
@@ -327,7 +316,13 @@ export default function ExpenseDetails() {
         style={[globalStyles.button, { marginTop: 30 }]}
         onPress={handleSave}
       >
-        <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
+        <Text
+          style={{
+            color: colors.background,
+            fontWeight: "600",
+            fontSize: 18,
+          }}
+        >
           Guardar cambios
         </Text>
       </Pressable>

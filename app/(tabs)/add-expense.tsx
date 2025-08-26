@@ -3,7 +3,7 @@ import { expenseCategoryNames } from "@/services/category-names";
 import { addTransaction } from "@/services/supabase";
 
 import { getPushToken } from "@/services/pushToken";
-import { colors, fontSize, globalStyles } from "@/utils/globalStyles";
+import { colors, globalStyles } from "@/utils/globalStyles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
@@ -96,22 +96,24 @@ export default function AddExpense() {
               alignItems: "center",
               paddingHorizontal: 10,
               marginRight: 12,
-              borderColor: showPicker || dateFocused ? colors.p5 : colors.p4,
+              borderColor:
+                showPicker || dateFocused
+                  ? colors.iconSelected
+                  : colors.iconPressed,
             },
           ]}
         >
           <Ionicons
             name="calendar-number-outline"
             size={20}
-            color={colors.p1}
+            color={colors.textPrimary}
           />
           <Text
             style={[
-              globalStyles.textBold,
               {
-                color: colors.p1,
+                color: colors.textPrimary,
                 marginLeft: 8,
-                fontSize: fontSize.base,
+                fontSize: 16,
               },
             ]}
           >
@@ -138,11 +140,13 @@ export default function AddExpense() {
               flexDirection: "row",
               alignItems: "center",
               paddingHorizontal: 10,
-              borderColor: amountFocused ? colors.p5 : colors.p4,
+              borderColor: amountFocused
+                ? colors.iconSelected
+                : colors.iconPressed,
             },
           ]}
         >
-          <Ionicons name="logo-euro" size={20} color={colors.p1} />
+          <Ionicons name="logo-euro" size={20} color={colors.textPrimary} />
           <TextInput
             placeholder="Ej. 45.90"
             value={amount}
@@ -154,11 +158,11 @@ export default function AddExpense() {
               globalStyles.text,
               {
                 flex: 1,
-                color: amount ? colors.p1 : colors.p4,
+                color: amount ? colors.textPrimary : colors.iconPressed,
                 fontWeight: amount ? "600" : "400",
               },
             ]}
-            placeholderTextColor={colors.p4}
+            placeholderTextColor={colors.iconPressed}
           />
         </View>
       </View>
@@ -173,11 +177,13 @@ export default function AddExpense() {
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              borderColor: descFocused ? colors.p5 : colors.p4,
+              borderColor: descFocused
+                ? colors.iconSelected
+                : colors.iconPressed,
             },
           ]}
         >
-          <Feather name="edit" size={20} color={colors.p1} />
+          <Feather name="edit" size={20} color={colors.textPrimary} />
           <TextInput
             placeholder="Ej. Mercadona"
             value={description}
@@ -188,11 +194,11 @@ export default function AddExpense() {
               globalStyles.text,
               {
                 flex: 1,
-                color: description ? colors.p1 : colors.p4,
+                color: description ? colors.textPrimary : colors.iconPressed,
                 fontWeight: description ? "600" : "400",
               },
             ]}
-            placeholderTextColor={colors.p4}
+            placeholderTextColor={colors.iconPressed}
           />
         </View>
       </View>
@@ -205,7 +211,7 @@ export default function AddExpense() {
       <View style={styles.categoriesGrid}>
         {Object.keys(expenseCategories).map((category) => {
           const isSelected = selectedCategory === category;
-          const color = isSelected ? colors.p5 : colors.p1;
+          const color = isSelected ? colors.iconSelected : colors.textPrimary;
 
           return (
             <Pressable
@@ -245,7 +251,13 @@ export default function AddExpense() {
         style={[globalStyles.button, { marginTop: 30 }]}
         onPress={handleSave}
       >
-        <Text style={{ color: colors.bg, fontWeight: "600", fontSize: 18 }}>
+        <Text
+          style={{
+            color: colors.background,
+            fontWeight: "600",
+            fontSize: 18,
+          }}
+        >
           Guardar gasto
         </Text>
       </Pressable>

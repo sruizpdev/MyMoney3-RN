@@ -105,7 +105,7 @@ export default function Home() {
         ]}
       >
         <View style={{ width: 40, justifyContent: "center" }}>
-          {IconFn ? IconFn(colors.p1, 22) : null}
+          {IconFn ? IconFn(colors.textPrimary, 22) : null}
         </View>
 
         <View style={{ flex: 1 }}>
@@ -139,8 +139,10 @@ export default function Home() {
           { justifyContent: "center", alignItems: "center" },
         ]}
       >
-        <ActivityIndicator size="large" color={colors.p1} />
-        <Text style={{ marginTop: 15, fontSize: 16, color: colors.p1 }}>
+        <ActivityIndicator size="large" color={colors.textPrimary} />
+        <Text
+          style={{ marginTop: 15, fontSize: 16, color: colors.textPrimary }}
+        >
           Cargando datos...
         </Text>
       </View>
@@ -155,7 +157,10 @@ export default function Home() {
           <Text
             style={[
               styles.balance,
-              { color: balanceData.balance >= 0 ? colors.p1 : colors.p6 },
+              {
+                color:
+                  balanceData.balance >= 0 ? colors.textPrimary : colors.danger,
+              },
             ]}
           >
             {balanceData.balance.toFixed(2)} €
@@ -165,12 +170,16 @@ export default function Home() {
               <MaterialIcons
                 name="arrow-downward"
                 size={16}
-                color={colors.p7}
+                color={colors.success}
               />
               <Text style={styles.totalText}>{income.toFixed(2)} €</Text>
             </View>
             <View style={styles.totalBox}>
-              <MaterialIcons name="arrow-upward" size={16} color={colors.p6} />
+              <MaterialIcons
+                name="arrow-upward"
+                size={16}
+                color={colors.danger}
+              />
               <Text style={styles.totalText}>{expense.toFixed(2)} €</Text>
             </View>
           </View>
@@ -203,32 +212,55 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1, backgroundColor: colors.bg },
+  mainContainer: { flex: 1, backgroundColor: colors.background },
   balanceContainer: {
     alignItems: "center",
     marginBottom: 20,
     height: 170,
     paddingTop: 60,
     paddingHorizontal: 30,
-    backgroundColor: colors.p5,
+    backgroundColor: colors.background,
   },
-  balance: { fontSize: 34, fontWeight: "bold" },
+  balance: {
+    fontSize: 34,
+    fontWeight: "bold",
+  },
   totalsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
     marginTop: 8,
   },
-  totalBox: { flexDirection: "row", alignItems: "center" },
+  totalBox: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   totalText: {
     fontSize: 14,
     fontWeight: "500",
     marginLeft: 4,
-    color: colors.p1,
+    color: colors.textPrimary,
   },
-  transactionItem: { flexDirection: "row", paddingVertical: 8 },
-  description: { fontSize: 16, fontWeight: "400", color: colors.p1 },
-  date: { fontSize: 12, color: colors.p2, marginTop: 2 },
-  amount: { fontSize: 16, fontWeight: "400" },
-  separator: { height: 1, backgroundColor: colors.p4 },
+  transactionItem: {
+    flexDirection: "row",
+    paddingVertical: 8,
+  },
+  description: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: colors.textPrimary,
+  },
+  date: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  amount: {
+    fontSize: 14,
+    fontWeight: "400",
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.separator,
+  },
 });

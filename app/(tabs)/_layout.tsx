@@ -7,19 +7,19 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.p5,
-        tabBarInactiveTintColor: colors.p1,
+        tabBarActiveTintColor: colors.iconSelected,
+        tabBarInactiveTintColor: colors.textPrimary,
         headerShown: false,
         headerStyle: {
           elevation: 0,
           shadowOpacity: 0,
         },
         tabBarStyle: {
-          backgroundColor: colors.bg,
+          backgroundColor: colors.background,
           height: 100,
         },
         tabBarLabelStyle: { fontSize: 12 },
-        sceneStyle: { backgroundColor: colors.bg },
+        sceneStyle: { backgroundColor: colors.background },
       }}
     >
       <Tabs.Screen
