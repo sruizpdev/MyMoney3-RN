@@ -55,7 +55,6 @@ export default function Home() {
       }
       const tokenData = await Notifications.getExpoPushTokenAsync();
       const newToken: string = tokenData.data;
-      console.log("Expo Push Token obtenido:", newToken);
       await setPushToken(newToken);
       await registerPushToken(newToken);
     };
