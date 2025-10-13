@@ -1,3 +1,5 @@
+// Users/sergiotto/dev/MyMoney3-RN/services/category-names.ts
+
 export const expenseCategoryNames: Record<string, string> = {
     food: "Comida",
     cats: "Michis",

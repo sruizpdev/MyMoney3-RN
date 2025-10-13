@@ -1,5 +1,6 @@
 import { useAuth } from "@/context/auth-context";
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Modal,
@@ -11,6 +12,8 @@ import {
 } from "react-native";
 
 export default function Options() {
+  const router = useRouter();
+
   const { signOut } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -29,7 +32,7 @@ export default function Options() {
     {
       title: "Bitcoin",
       icon: <FontAwesome5 name="bitcoin" size={24} color="orange" />,
-      action: () => showComingSoon("Bitcoin"),
+      action: () => router.push("/screens/bitcoin-value"),
     },
     {
       title: "Buscar transacción",
@@ -49,7 +52,7 @@ export default function Options() {
     {
       title: "Ver estadísticas por tipo de gasto",
       icon: <MaterialIcons name="bar-chart" size={24} color="teal" />,
-      action: () => showComingSoon("Estadísticas por tipo de gasto"),
+      action: () => router.push("/screens/expenses-by-category"),
     },
     {
       title: "Salir de la app",
