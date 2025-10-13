@@ -9,6 +9,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Pressable,
   ScrollView,
@@ -28,6 +29,7 @@ export default function AddExpense() {
   const [amountFocused, setAmountFocused] = useState(false);
   const [descFocused, setDescFocused] = useState(false);
   const [dateFocused, setDateFocused] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const router = useRouter();
 
@@ -36,6 +38,8 @@ export default function AddExpense() {
       Alert.alert("Error", "Por favor completa todos los campos");
       return;
     }
+    if (isSaving) return;
+    setIsSaving(true);
 
     const newExpense = {
       description,
@@ -55,11 +59,6 @@ export default function AddExpense() {
       const saved = await addTransaction(newExpense, token);
 
       if (saved && saved.id) {
-        // await sendPushNotificationToOthers(
-        //   { title: "Nuevo gasto", body: `${description} - ${amount} €` },
-        //   token
-        // );
-
         setDescription("");
         setAmount("");
         setDate(new Date());
@@ -71,6 +70,8 @@ export default function AddExpense() {
     } catch (error) {
       console.error(error);
       Alert.alert("Error", "No se pudo guardar el gasto");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -248,18 +249,44 @@ export default function AddExpense() {
       </View>
 
       <Pressable
-        style={[globalStyles.button, { marginTop: 30 }]}
+        style={[
+          globalStyles.button,
+          {
+            marginTop: 30,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: isSaving ? 0.7 : 1,
+          },
+        ]}
         onPress={handleSave}
+        disabled={isSaving}
       >
-        <Text
-          style={{
-            color: colors.background,
-            fontWeight: "600",
-            fontSize: 18,
-          }}
-        >
-          Guardar gasto
-        </Text>
+        {isSaving ? (
+          <>
+            <ActivityIndicator size="small" color={colors.background} />
+            <Text
+              style={{
+                color: colors.background,
+                fontWeight: "600",
+                fontSize: 18,
+                marginLeft: 8,
+              }}
+            >
+              Guardando...
+            </Text>
+          </>
+        ) : (
+          <Text
+            style={{
+              color: colors.background,
+              fontWeight: "600",
+              fontSize: 18,
+            }}
+          >
+            Guardar gasto
+          </Text>
+        )}
       </Pressable>
     </ScrollView>
   );
