@@ -18,7 +18,7 @@ export default function TabLayout() {
           backgroundColor: colors.background,
           height: 100,
         },
-        tabBarLabelStyle: { fontSize: 12 },
+        tabBarLabelStyle: { fontSize: 14 },
         sceneStyle: { backgroundColor: colors.background },
       }}
     >
@@ -27,7 +27,7 @@ export default function TabLayout() {
         options={{
           title: "Inicio",
           tabBarIcon: ({ color }) => (
-            <AntDesign name="home" size={30} color={color} />
+            <AntDesign name="home" size={27} color={color} />
           ),
         }}
       />
@@ -45,7 +45,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="add-expense"
         options={{
-          title: "Añadir Gasto",
+          title: "Gasto",
           tabBarIcon: ({ color }) => (
             <Ionicons name="remove-circle-outline" size={30} color={color} /> // <-- aquí
           ),
